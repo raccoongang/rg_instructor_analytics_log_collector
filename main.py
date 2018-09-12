@@ -1,12 +1,18 @@
+"""
+Enterpoint.
+"""
 import argparse
 
 import django
 
+from rg_instructor_analytics_log_collector.raw_log_loaders import run_ziped_file_loader
 from rg_instructor_analytics_log_collector.repository import MySQlRepository
-from rg_instructor_analytics_log_collector.source_generators import run_ziped_file_generator
 
 
 def main():
+    """
+    Start app.
+    """
     parser = argparse.ArgumentParser(
         description='App for load logs records in to mysql'
     )
@@ -21,7 +27,7 @@ def main():
     django.setup()
 
     repository = MySQlRepository()
-    run_ziped_file_generator(arg.tracking_log_dir, repository)
+    run_ziped_file_loader(arg.tracking_log_dir, repository)
 
 
 if __name__ == "__main__":
