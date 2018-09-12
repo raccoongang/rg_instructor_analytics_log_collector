@@ -1,3 +1,4 @@
+https://travis-ci.org/raccoongang/rg_instructor_analytics_log_collector.svg?branch=master
 # Util for the tracking log parsing and storing it into mySql databse 
 
 ## Setup 
