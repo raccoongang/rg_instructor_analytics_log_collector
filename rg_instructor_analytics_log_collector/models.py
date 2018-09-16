@@ -3,7 +3,10 @@ Models of the rg analytics.
 """
 
 from django.db import connection
-from django.db.models import CharField, DateTimeField, Manager, Model, TextField
+from django.db.models import BooleanField, CharField, DateTimeField, IntegerField, Manager, Model, TextField
+
+
+from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
 
 
 class BulkInsertManager(Manager):
@@ -62,3 +65,32 @@ class LogTable(Model):
 
         unique_together = ('message_type', 'log_time', 'user_name')
         ordering = ['-log_time']
+
+
+class EnrollmentByDay(Model):
+    """
+    Model for the statistic of the enrollment per day.
+    """
+
+    day = DateTimeField(db_index=True)
+    total = IntegerField()
+    enrolled = IntegerField()
+    unenrolled = IntegerField()
+    course = CourseKeyField(max_length=255, db_index=True)
+
+    class Meta:
+        """
+        Meta class.
+        """
+
+        ordering = ['-day']
+
+
+class EnrollmentByUser(Model):
+    """
+    Model for store enroll state of the user.
+    """
+
+    course = CourseKeyField(max_length=255, db_index=True)
+    student = IntegerField(db_index=True)
+    is_enrolled = BooleanField()

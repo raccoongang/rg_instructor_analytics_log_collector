@@ -10,9 +10,18 @@ https://travis-ci.org/raccoongang/rg_instructor_analytics_log_collector.svg?bran
 * Add to the django installed app 
 * Install package in to the environment with edx-platform
 * Run migrations
+* Ensure, that app has access to the log directory
 
-## Run
+## Run Log Watcher
 ```bash
-python main.py [--tracking_log_dir]
+python run_log_watcher.py [--tracking_log_dir] [--sleep_time]
 ```
-argument tracking_log_dir point to the log directory, by default it equal tp `/edx/var/log/tracking`
+* argument tracking_log_dir point to the log directory, by default it equal tp `/edx/var/log/tracking`
+* argument sleep_time count seconds before rescan the log direcotry. Default - 5 minutes.
+
+## Run Processors
+```bash
+python run_processors.py [--aliases] [--sleep_time]
+```
+* aliases - list of the aliases for run. I.E. `enrollment` 
+* argument sleep_time count seconds before rescan the log direcotry. Default - 5 minutes.

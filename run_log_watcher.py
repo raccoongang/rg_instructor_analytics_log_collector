@@ -2,8 +2,10 @@
 Enterpoint.
 """
 import argparse
+import time
 
 import django
+django.setup()
 
 from rg_instructor_analytics_log_collector.raw_log_loaders import run_ziped_file_loader
 from rg_instructor_analytics_log_collector.repository import MySQlRepository
@@ -23,11 +25,22 @@ def main():
         type=str,
         default='/edx/var/log/tracking'
     )
+    parser.add_argument(
+        '--sleep_time',
+        action="store",
+        dest="sleep_time",
+        help="Time between refreshing statistic(in seconds)",
+        type=int,
+        default=300
+    )
+
     arg = parser.parse_args()
     django.setup()
 
-    repository = MySQlRepository()
-    run_ziped_file_loader(arg.tracking_log_dir, repository)
+    while True:
+        repository = MySQlRepository()
+        run_ziped_file_loader(arg.tracking_log_dir, repository)
+        time.sleep(arg.sleep_time)
 
 
 if __name__ == "__main__":
