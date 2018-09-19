@@ -1,5 +1,5 @@
 """
-Enterpoint.
+Entrypoint.
 """
 
 import argparse

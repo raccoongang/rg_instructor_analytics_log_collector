@@ -85,7 +85,7 @@ class BasePipeline(object):
 
 class EnrollmentPipeline(BasePipeline):
     """
-    Processor for enrollment stat.
+    Enrollment stats Processor.
     """
 
     alias = 'enrollment'
@@ -97,11 +97,12 @@ class EnrollmentPipeline(BasePipeline):
 
     def retrieve_last_date(self):
         """
-        Return date of the last processed log message.
+        Fetch the moment of time daily enrollments were lastly updated.
+
+        :return: DateTime or None
         """
-        last_collected_stat = EnrollmentByDay.objects.first()
-        if last_collected_stat:
-            return last_collected_stat.day
+        last_data = EnrollmentByDay.objects.first()
+        return last_data and last_data.last_updated
 
     def _format_as_edx_event(self, record):
         """
@@ -130,9 +131,10 @@ class EnrollmentPipeline(BasePipeline):
             log.debug('Can not parse enrollment information from the request event. {}, {}'.format(event_body, repr(e)))
             return None
 
+    @property
     def ordered_fields(self):
         """
-        Return list of fields for ordering.
+        Ordering fields list.
         """
         return ['log_time', 'course']
 
@@ -159,7 +161,7 @@ class EnrollmentPipeline(BasePipeline):
         for r in records:
             if date is not None and (r['log_time'].date() != date.date() or course != r['course']):
                 yield ((date, course), users)
-            date = r['log_time']
+            date = r['log_time'].date()
             course = r['course']
             users.append((r['user'], r['is_enroll']))
         yield ((date, course), users)
@@ -168,7 +170,7 @@ class EnrollmentPipeline(BasePipeline):
         """
         Load last collected stat about course enrollment and user enrollment.
         """
-        (date, course), users = aggregated_records
+        (_, course), users = aggregated_records
         user_query = [Q(student=user) for user, _ in users]
         user_query_result = user_query[0]
         for q in user_query[1:]:
@@ -193,7 +195,7 @@ class EnrollmentPipeline(BasePipeline):
         unenrollemnt = 0
         if course_info:
             total = course_info.total
-            if date.date() == course_info.day.date():
+            if date == course_info.day:
                 enrollment = course_info.enrolled
                 unenrollemnt = course_info.unenrolled
 

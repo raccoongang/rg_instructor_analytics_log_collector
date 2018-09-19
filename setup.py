@@ -10,13 +10,14 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name="rg_instructor_analytics_log_collector",
-    version="0.1",
+    name='rg_instructor_analytics_log_collector',
+    version='0.1.0',
     install_requires=[
-        "setuptools",
+        'setuptools',
+        'django-model-utils==2.3.1',
     ],
     requires=[],
-    packages=["rg_instructor_analytics_log_collector"],
+    packages=['rg_instructor_analytics_log_collector'],
     description='Open edX log collector',
     long_description=README,
 )

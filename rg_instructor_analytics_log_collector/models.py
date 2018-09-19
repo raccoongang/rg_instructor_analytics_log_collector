@@ -1,15 +1,13 @@
 """
-Models of the rg analytics.
+Models of the RG analytics.
 """
 
-from django.db import connection
-from django.db.models import BooleanField, CharField, DateTimeField, IntegerField, Manager, Model, TextField
-
+from django.db import connection, models
 
 from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
 
 
-class BulkInsertManager(Manager):
+class BulkInsertManager(models.Manager):
     """
     Manager with  bulk_insert_or_update.
     """
@@ -38,59 +36,53 @@ class BulkInsertManager(Manager):
         cursor.executemany(sql, values)
 
 
-class ProcessedZipLog(Model):
+class ProcessedZipLog(models.Model):
     """
-    Model for store processed log files.
+    Already processed tracking log files.
     """
 
-    file_name = TextField(max_length=256)
+    file_name = models.TextField(max_length=256)
 
 
-class LogTable(Model):
+class LogTable(models.Model):
     """
-    Model for store tracking log record inside mySql.
+    Log Records parsed from tracking gzipped log file.
     """
+
+    message_type = models.CharField(db_index=True, max_length=128)
+    log_time = models.DateTimeField()
+    user_name = models.CharField(null=True, blank=True, max_length=128)
+    log_message = models.TextField()
 
     objects = BulkInsertManager()
 
-    message_type = CharField(db_index=True, max_length=128)
-    log_time = DateTimeField()
-    user_name = CharField(null=True, blank=True, max_length=128)
-    log_message = TextField()
-
-    class Meta:
-        """
-        Meta class.
-        """
-
+    class Meta:  # NOQA
         unique_together = ('message_type', 'log_time', 'user_name')
         ordering = ['-log_time']
 
 
-class EnrollmentByDay(Model):
+class EnrollmentByDay(models.Model):
     """
-    Model for the statistic of the enrollment per day.
+    Cumulative per-day Enrollment stats.
     """
 
-    day = DateTimeField(db_index=True)
-    total = IntegerField()
-    enrolled = IntegerField()
-    unenrolled = IntegerField()
+    day = models.DateField(db_index=True)
+    total = models.IntegerField()
+    enrolled = models.IntegerField()
+    unenrolled = models.IntegerField()
     course = CourseKeyField(max_length=255, db_index=True)
+    last_updated = models.DateField(auto_now=True, null=True)
 
-    class Meta:
-        """
-        Meta class.
-        """
-
+    class Meta:  # NOQA
+        unique_together = ('course', 'last_updated',)
         ordering = ['-day']
 
 
-class EnrollmentByUser(Model):
+class EnrollmentByUser(models.Model):
     """
-    Model for store enroll state of the user.
+    User's Enrollment status changes (per-course).
     """
 
     course = CourseKeyField(max_length=255, db_index=True)
-    student = IntegerField(db_index=True)
-    is_enrolled = BooleanField()
+    student = models.IntegerField(db_index=True)
+    is_enrolled = models.BooleanField()

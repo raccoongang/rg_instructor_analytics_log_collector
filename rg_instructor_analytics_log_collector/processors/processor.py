@@ -1,13 +1,11 @@
 """
-Module with processor.
+Processor module.
 """
 import logging
 import operator
 import time
 
-
 from django.db.models import Q
-
 
 from rg_instructor_analytics_log_collector.models import LogTable
 from rg_instructor_analytics_log_collector.processors.base_pipeline import EnrollmentPipeline
@@ -47,9 +45,9 @@ class Processor(object):
                 type_request |= Q(message_type__contains=pipeline_type)
 
         query = LogTable.objects.filter(type_request)
-        last_date = pipeline.retrieve_last_date()
-        if last_date:
-            query &= LogTable.objects.filter(log_time__lt=last_date)
+        last_updated = pipeline.retrieve_last_date()
+        if last_updated:
+            query &= LogTable.objects.filter(log_time__lt=last_updated)  # before last update?
         return query.order_by('log_time').all()
 
     def _sort(self, ordering, records):
@@ -78,10 +76,10 @@ class Processor(object):
                 records = self._get_query_for_pipeline(pipeline)
                 if not records:
                     continue
-                if pipeline.format:
+                if pipeline.format:  # ? getattr / hasattr
                     records = filter(None, [pipeline.format(m) for m in records])
                 if pipeline.ordered_fields:
-                    records = self._sort(pipeline.ordered_fields(), records)
+                    records = self._sort(pipeline.ordered_fields, records)
                 if pipeline.aggregate:
                     records = pipeline.aggregate(records)
                 for m in records:
