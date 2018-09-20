@@ -17,27 +17,24 @@ log = logging.getLogger(__name__)
 class BasePipeline(object):
     """
     Base Pipeline.
+
+    NOTE: After implementing new pipeline, add it to the Processor.
     """
 
     __metaclass__ = ABCMeta
 
-    @abstractmethod
-    def alias(self):
-        """
-        Return readable name of the pipeline.
-        """
-        pass
+    """
+    Readable name of the pipeline.
+    """
+    alias = None
+
+    """
+    List of the log types, that supported by current pipeline.
+    """
+    supported_types = None
 
     @abstractmethod
-    def supported_types(self):
-        """
-        Return list of the log types, that supported by current pipeline.
-        """
-        pass
-
-    @abstractmethod
-    def last_date(self):
-        # type () -> datetime.datetime
+    def retrieve_last_date(self):
         """
         Return date of the last processed record (or None for the first run).
         """
@@ -91,29 +88,20 @@ class EnrollmentPipeline(BasePipeline):
     Processor for enrollment stat.
     """
 
-    def alias(self):
-        """
-        Return alias.
-        """
-        return 'enrollment'
+    alias = 'enrollment'
+    supported_types = [
+        'edx.course.enrollment.deactivated',
+        'edx.course.enrollment.activated',
+        '/admin/student/courseenrollment/',
+    ]
 
-    def supported_types(self):
-        """
-        Return list of the supported log types.
-        """
-        return [
-            'edx.course.enrollment.deactivated',
-            'edx.course.enrollment.activated',
-            '/admin/student/courseenrollment/',
-        ]
-
-    def last_date(self):
+    def retrieve_last_date(self):
         """
         Return date of the last processed log message.
         """
-        if not EnrollmentByDay.objects.exists():
-            return None
-        return EnrollmentByDay.objects.first().day
+        last_collected_stat = EnrollmentByDay.objects.first()
+        if last_collected_stat:
+            return last_collected_stat.day
 
     def _format_as_edx_event(self, record):
         """

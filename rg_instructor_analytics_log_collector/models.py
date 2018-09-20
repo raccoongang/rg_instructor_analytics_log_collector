@@ -29,7 +29,7 @@ class BulkInsertManager(Manager):
         cursor = connection.cursor()
         db_table = self.model._meta.db_table
 
-        values_sql = "(%s)" % (','.join(["%s" for _ in range(len(values[0]))]),)
+        values_sql = "(%s)" % (','.join(['%s'] * len(values[0])),)
         base_sql = "INSERT INTO %s (%s) VALUES " % (db_table, ",".join(create_fields))
         on_duplicates = [field + "=VALUES(" + field + ")" for field in update_fields]
 
