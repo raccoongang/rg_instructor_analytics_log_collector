@@ -31,7 +31,7 @@ class BulkInsertManager(Manager):
 
         values_sql = "(%s)" % (','.join(['%s'] * len(values[0])),)
         base_sql = "INSERT INTO %s (%s) VALUES " % (db_table, ",".join(create_fields))
-        on_duplicates = [field + "=VALUES(" + field + ")" for field in update_fields]
+        on_duplicates = ["%s=VALUES(%s)" % (field, field) for field in update_fields]
 
         sql = "%s %s ON DUPLICATE KEY UPDATE %s" % (base_sql, values_sql, ",".join(on_duplicates))
 
