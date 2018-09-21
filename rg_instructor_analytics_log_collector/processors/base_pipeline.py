@@ -9,6 +9,7 @@ import logging
 from django.db.models import Q
 from opaque_keys.edx.keys import CourseKey
 
+from rg_instructor_analytics_log_collector.constants import Events
 from rg_instructor_analytics_log_collector.models import EnrollmentByDay, EnrollmentByUser
 
 log = logging.getLogger(__name__)
@@ -29,7 +30,9 @@ class BasePipeline(object):
     alias = None
 
     """
-    List of the log types, that supported by current pipeline.
+    Supported log types list.
+    See:
+    https://edx.readthedocs.io/projects/devdata/en/stable/internal_data_formats/event_list.html#event-list
     """
     supported_types = None
 
@@ -90,10 +93,8 @@ class EnrollmentPipeline(BasePipeline):
 
     alias = 'enrollment'
     supported_types = [
-        'edx.course.enrollment.deactivated',
-        'edx.course.enrollment.activated',
         '/admin/student/courseenrollment/',
-    ]
+    ] + Events.ENROLLMENT_EVENTS
 
     def retrieve_last_date(self):
         """
@@ -110,7 +111,7 @@ class EnrollmentPipeline(BasePipeline):
         """
         event_body = json.loads(record.log_message)
         return {
-            'is_enroll': record.message_type == 'edx.course.enrollment.activated',
+            'is_enrolled': record.message_type == Events.USER_ENROLLED,
             'course': event_body['event']['course_id'],
             'user': event_body['event']['user_id']
         }
@@ -123,12 +124,14 @@ class EnrollmentPipeline(BasePipeline):
         try:
             event_info = json.loads(event_body['event'])['POST']
             return {
-                'is_enroll': event_info.get('is_active', ['off'])[0] == 'on',
+                'is_enrolled': event_info.get('is_active', ['off'])[0] == 'on',
                 'course': event_info['course_id'][0],
                 'user': event_info['user'][0]
             }
         except (IndexError, KeyError, ValueError) as e:
-            log.debug('Can not parse enrollment information from the request event. {}, {}'.format(event_body, repr(e)))
+            log.debug('Can not parse enrollment information from the request event. {}, {}'.format(
+                event_body, repr(e)
+            ))
             return None
 
     @property
@@ -142,7 +145,7 @@ class EnrollmentPipeline(BasePipeline):
         """
         Format raw log to the internal format.
         """
-        if record.message_type in ['edx.course.enrollment.deactivated', 'edx.course.enrollment.activated']:
+        if record.message_type in Events.ENROLLMENT_EVENTS:
             result = self._format_as_edx_event(record)
         else:
             result = self._format_request_event(record)
@@ -163,14 +166,14 @@ class EnrollmentPipeline(BasePipeline):
                 yield ((date, course), users)
             date = r['log_time'].date()
             course = r['course']
-            users.append((r['user'], r['is_enroll']))
+            users.append((r['user'], r['is_enrolled']))
         yield ((date, course), users)
 
     def load_database_contex(self, aggregated_records):
         """
         Load last collected stat about course enrollment and user enrollment.
         """
-        (_, course), users = aggregated_records
+        (__, course), users = aggregated_records
         user_query = [Q(student=user) for user, _ in users]
         user_query_result = user_query[0]
         for q in user_query[1:]:
@@ -200,11 +203,11 @@ class EnrollmentPipeline(BasePipeline):
                 unenrollemnt = course_info.unenrolled
 
         users_state = {uf.student: uf.is_enrolled for uf in user_info or []}
-        for user, is_enroll in users:
-            if user in users_state and users_state[user] == is_enroll:
+        for user, is_enrolled in users:
+            if user in users_state and users_state[user] == is_enrolled:
                 continue
-            users_state[user] = is_enroll
-            if is_enroll:
+            users_state[user] = is_enrolled
+            if is_enrolled:
                 enrollment += 1
                 total += 1
             else:
