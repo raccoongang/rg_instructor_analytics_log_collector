@@ -23,6 +23,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='enrollmentbyday',
-            unique_together=set([('course', 'last_updated')]),
+            unique_together=set([('course', 'day')]),
         ),
     ]

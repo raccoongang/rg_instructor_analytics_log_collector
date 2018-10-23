@@ -74,7 +74,7 @@ class EnrollmentByDay(models.Model):
     last_updated = models.DateField(auto_now=True, null=True)
 
     class Meta:  # NOQA
-        # unique_together = ('course', 'last_updated',)
+        unique_together = ('course', 'day',)
         ordering = ['-day']
 
 
