@@ -162,7 +162,7 @@ class EnrollmentPipeline(BasePipeline):
         course = None
         users = []
         for r in records:
-            if date is not None and (r['log_time'].date() != date.date() or course != r['course']):
+            if date is not None and (r['log_time'].date() != date or course != r['course']):
                 yield ((date, course), users)
             date = r['log_time'].date()
             course = r['course']
