@@ -86,3 +86,21 @@ class EnrollmentByUser(models.Model):
     course = CourseKeyField(max_length=255, db_index=True)
     student = models.IntegerField(db_index=True)
     is_enrolled = models.BooleanField()
+
+
+class LastProcessedLog(models.Model):
+    """
+    Last processed LogTable by Processor.
+    """
+
+    ENROLLMENT = 'EN'
+    VIDEO_VIEWS = 'VI'
+
+    PROCESSOR_CHOICES = (
+        (ENROLLMENT, 'Enrollment'),
+        (VIDEO_VIEWS, 'VideoViews'),
+    )
+
+    log_table = models.ForeignKey(LogTable)
+    processor = models.CharField(max_length=2, choices=PROCESSOR_CHOICES, unique=True)
+

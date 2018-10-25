@@ -10,7 +10,7 @@ from django.db.models import Q
 from opaque_keys.edx.keys import CourseKey
 
 from rg_instructor_analytics_log_collector.constants import Events
-from rg_instructor_analytics_log_collector.models import EnrollmentByDay, EnrollmentByUser
+from rg_instructor_analytics_log_collector.models import EnrollmentByDay, EnrollmentByUser, LastProcessedLog
 
 log = logging.getLogger(__name__)
 
@@ -102,8 +102,12 @@ class EnrollmentPipeline(BasePipeline):
 
         :return: DateTime or None
         """
-        last_data = EnrollmentByDay.objects.first()
-        return last_data and last_data.last_updated
+
+        last_processed_log_table = LastProcessedLog.objects.filter(
+            processor=LastProcessedLog.ENROLLMENT
+        ).first()
+
+        return last_processed_log_table and last_processed_log_table.log_table.log_time
 
     def _format_as_edx_event(self, record):
         """
@@ -236,3 +240,9 @@ class EnrollmentPipeline(BasePipeline):
                     'is_enrolled': state
                 }
             )
+
+    def update_last_processed_log(self, last_record):
+
+        if last_record:
+            LastProcessedLog.objects.update_or_create(processor=LastProcessedLog.ENROLLMENT,
+                                                      defaults={'log_table': last_record})
