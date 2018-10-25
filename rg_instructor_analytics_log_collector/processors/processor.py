@@ -45,9 +45,9 @@ class Processor(object):
                 type_request |= Q(message_type__contains=pipeline_type)
 
         query = LogTable.objects.filter(type_request)
-        last_updated = pipeline.retrieve_last_date()
-        if last_updated:
-            query &= LogTable.objects.filter(log_time__lt=last_updated)  # before last update?
+        last_processed_log_date = pipeline.retrieve_last_date()
+        if last_processed_log_date:
+            query = query.filter(log_time__lt=last_processed_log_date)
         return query.order_by('log_time').all()
 
     def _sort(self, ordering, records):
@@ -74,6 +74,7 @@ class Processor(object):
         while True:
             for pipeline in self.pipelinies:
                 records = self._get_query_for_pipeline(pipeline)
+                last_record = records.last()
                 if not records:
                     continue
                 if pipeline.format:  # ? getattr / hasattr
@@ -85,4 +86,5 @@ class Processor(object):
                 for m in records:
                     db_context = pipeline.load_database_contex and pipeline.load_database_contex(m) or None
                     pipeline.push_to_database(m, db_context)
+                pipeline.update_last_processed_log(last_record)
             time.sleep(self.sleep_time)
