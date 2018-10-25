@@ -60,6 +60,9 @@ class LogTable(models.Model):
         unique_together = ('message_type', 'log_time', 'user_name')
         ordering = ['-log_time']
 
+    def __unicode__(self):
+        return u'{} {}'.format(self.message_type, self.log_time)
+
 
 class EnrollmentByDay(models.Model):
     """
@@ -103,4 +106,3 @@ class LastProcessedLog(models.Model):
 
     log_table = models.ForeignKey(LogTable)
     processor = models.CharField(max_length=2, choices=PROCESSOR_CHOICES, unique=True)
-

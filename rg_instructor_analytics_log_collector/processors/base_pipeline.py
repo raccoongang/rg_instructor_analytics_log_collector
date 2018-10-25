@@ -102,7 +102,6 @@ class EnrollmentPipeline(BasePipeline):
 
         :return: DateTime or None
         """
-
         last_processed_log_table = LastProcessedLog.objects.filter(
             processor=LastProcessedLog.ENROLLMENT
         ).first()
@@ -242,7 +241,9 @@ class EnrollmentPipeline(BasePipeline):
             )
 
     def update_last_processed_log(self, last_record):
-
+        """
+        Create or update last processed LogTable by Processor.
+        """
         if last_record:
             LastProcessedLog.objects.update_or_create(processor=LastProcessedLog.ENROLLMENT,
                                                       defaults={'log_table': last_record})
