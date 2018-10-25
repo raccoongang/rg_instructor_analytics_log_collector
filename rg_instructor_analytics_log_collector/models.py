@@ -60,7 +60,7 @@ class LogTable(models.Model):
         unique_together = ('message_type', 'log_time', 'user_name')
         ordering = ['-log_time']
 
-    def __unicode__(self):
+    def __unicode__(self):  # NOQA
         return u'{} {}'.format(self.message_type, self.log_time)
 
 
