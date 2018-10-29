@@ -55,12 +55,14 @@ class BasePipeline(object):
         """
         return None
 
+    @property
     def ordered_fields(self):
         """
         Return list of the filed for sort.
 
         If needed reverse sorting - use symbol `-` before field name.
         """
+        return []
 
     def aggregate(self, records):
         """
