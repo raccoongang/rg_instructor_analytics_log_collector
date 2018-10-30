@@ -1,6 +1,7 @@
 """
 Processor module.
 """
+from datetime import datetime
 import logging
 import operator
 import time
@@ -73,6 +74,7 @@ class Processor(object):
         """
         while True:
             for pipeline in self.pipelinies:
+                logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
                 records = self._get_query_for_pipeline(pipeline)
                 last_record = records.last()
                 if not records:
@@ -87,4 +89,5 @@ class Processor(object):
                     db_context = pipeline.load_database_contex and pipeline.load_database_contex(m) or None
                     pipeline.push_to_database(m, db_context)
                 pipeline.update_last_processed_log(last_record)
+                logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
             time.sleep(self.sleep_time)
