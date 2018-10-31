@@ -46,6 +46,7 @@ python run_log_watcher.py [--tracking_log_dir] [--sleep_time]
 - `sleep_time` - log directory rescan period (seconds, default: 5 minutes).
 
 ## Run Processors
+If you install the Analytics at the first time, run `Processors` after `Log Watcher` running has finished.
 
 ```
 # bash

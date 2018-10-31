@@ -55,6 +55,7 @@ class LogTable(models.Model):
     log_time = models.DateTimeField()
     user_name = models.CharField(null=True, blank=True, max_length=128)
     log_message = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
 
     objects = BulkInsertManager()
 
