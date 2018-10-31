@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='logtable',
             name='created',
-            field=models.DateTimeField(default=datetime.datetime(2018, 10, 30, 20, 0, 56, add , tzinfo=utc), auto_now_add=True),
+            field=models.DateTimeField(default=datetime.datetime(2018, 10, 30, 20, 0, 56, 628148, tzinfo=utc), auto_now_add=True),
             preserve_default=False,
         ),
     ]
