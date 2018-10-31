@@ -6,6 +6,8 @@ from django.db import connection, models
 
 from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
 
+from rg_instructor_analytics_log_collector.constants import Events
+
 
 class BulkInsertManager(models.Manager):
     """
@@ -99,11 +101,31 @@ class LastProcessedLog(models.Model):
 
     ENROLLMENT = 'EN'
     VIDEO_VIEWS = 'VI'
+    DISCUSSION_ACTIVITY = 'DA'
 
     PROCESSOR_CHOICES = (
         (ENROLLMENT, 'Enrollment'),
         (VIDEO_VIEWS, 'VideoViews'),
+        (DISCUSSION_ACTIVITY, 'Discussion activity'),
     )
 
     log_table = models.ForeignKey(LogTable)
     processor = models.CharField(max_length=2, choices=PROCESSOR_CHOICES, unique=True)
+
+
+class DiscussionActivity(models.Model):
+    """
+    Track specific user activities
+    """
+
+    event_type = models.CharField(max_length=255)
+    user_id = models.IntegerField()
+    course = CourseKeyField(max_length=255, db_index=True)
+    category_id = models.CharField(max_length=255, blank=True, null=True)
+    commentable_id = models.CharField(max_length=255)
+    discussion_id = models.CharField(max_length=255)
+    thread_type = models.CharField(max_length=255, blank=True, null=True)
+    log_time = models.DateTimeField()
+
+    def __unicode__(self):  # NOQA
+        return u'{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)
