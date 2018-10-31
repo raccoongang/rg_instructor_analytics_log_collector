@@ -48,8 +48,8 @@ class Processor(object):
         query = LogTable.objects.filter(type_request)
         last_processed_log_date = pipeline.retrieve_last_date()
         if last_processed_log_date:
-            query = query.filter(log_time__lt=last_processed_log_date)
-        return query.order_by('log_time').all()
+            query = query.filter(created__gte=last_processed_log_date)
+        return query.order_by('log_time')
 
     def _sort(self, ordering, records):
         """
