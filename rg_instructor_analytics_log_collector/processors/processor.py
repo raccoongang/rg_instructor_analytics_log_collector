@@ -4,6 +4,7 @@ Processor module.
 import logging
 import operator
 import time
+from datetime import datetime
 
 from django.db.models import Q
 
@@ -47,8 +48,8 @@ class Processor(object):
         query = LogTable.objects.filter(type_request)
         last_processed_log_date = pipeline.retrieve_last_date()
         if last_processed_log_date:
-            query = query.filter(log_time__lt=last_processed_log_date)
-        return query.order_by('log_time').all()
+            query = query.filter(created__gte=last_processed_log_date)
+        return query.order_by('log_time')
 
     def _sort(self, ordering, records):
         """
@@ -73,6 +74,7 @@ class Processor(object):
         """
         while True:
             for pipeline in self.pipelinies:
+                logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
                 records = self._get_query_for_pipeline(pipeline)
                 last_record = records.last()
                 if not records:
@@ -87,4 +89,5 @@ class Processor(object):
                     db_context = pipeline.load_database_contex and pipeline.load_database_contex(m) or None
                     pipeline.push_to_database(m, db_context)
                 pipeline.update_last_processed_log(last_record)
+                logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
             time.sleep(self.sleep_time)
