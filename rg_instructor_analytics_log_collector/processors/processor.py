@@ -80,6 +80,7 @@ class Processor(object):
                 records = self._get_query_for_pipeline(pipeline)
 
                 if not records:
+                    logging.info('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
                     continue
 
                 last_record = records.last()
