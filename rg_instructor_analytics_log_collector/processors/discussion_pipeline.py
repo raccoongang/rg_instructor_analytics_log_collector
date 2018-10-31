@@ -1,6 +1,8 @@
 import json
 import logging
 
+from opaque_keys.edx.keys import CourseKey
+
 from rg_instructor_analytics_log_collector.constants import Events
 from rg_instructor_analytics_log_collector.models import LastProcessedLog, DiscussionActivity
 from rg_instructor_analytics_log_collector.processors.base_pipeline import BasePipeline
@@ -38,7 +40,7 @@ class DiscussionPipeline(BasePipeline):
         return {
             'event_type': record.message_type,
             'user_id': event_body['context']['user_id'],
-            'course': event_body['context']['course_id'],
+            'course': CourseKey.from_string(event_body['context']['course_id']),
             'category_id': event_body['event'].get('category_id'),
             'commentable_id': event_body['event']['commentable_id'],
             'discussion_id': event_body['event']['id'],
@@ -47,7 +49,7 @@ class DiscussionPipeline(BasePipeline):
         }
 
     def push_to_database(self, record, db_context):
-        DiscussionActivity.objects.create(**record)
+        DiscussionActivity.objects.get_or_create(**record)
 
     def update_last_processed_log(self, last_record):
         """
