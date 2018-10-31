@@ -53,7 +53,7 @@ class EnrollmentPipeline(BasePipeline):
         last_processed_log_date = self.retrieve_last_date()
 
         if last_processed_log_date:
-            query = query.filter(created__lte=last_processed_log_date)
+            query = query.filter(created__gte=last_processed_log_date)
 
         return query.order_by('log_time').all()
 
