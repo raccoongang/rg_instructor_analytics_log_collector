@@ -34,3 +34,4 @@ def run_ziped_file_loader(dir_name, repository):
             repository.add_new_log_records(log_file.readlines())
             repository.mark_as_processed_source(f)
             logging.info('Finished process next log file: {}'.format(f))
+_

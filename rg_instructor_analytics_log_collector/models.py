@@ -106,3 +106,39 @@ class LastProcessedLog(models.Model):
 
     log_table = models.ForeignKey(LogTable)
     processor = models.CharField(max_length=2, choices=PROCESSOR_CHOICES, unique=True)
+
+
+class VideoViewsByUser(models.Model):
+    """
+    User's ........
+    """
+
+    course = CourseKeyField(max_length=255)
+    user_id = models.IntegerField()
+    video_block_id = models.CharField(max_length=255)
+    is_completed = models.BooleanField(default=False)
+    viewed_time = models.IntegerField(default=0)
+
+    class Meta:  # NOQA
+        unique_together = ('course', 'user_id', 'video_block_id')
+
+    def __unicode__(self):  # NOQA
+        return u'{} {} {}'.format(self.user_id, self.course, self.video_block_id)
+
+
+class VideoViewsByBlock(models.Model):
+    """
+    User's ........
+    """
+
+    course = CourseKeyField(max_length=255)
+    video_block_id = models.CharField(max_length=255)
+    count_full_viewed = models.IntegerField(default=0)
+    count_part_viewed = models.IntegerField(default=0)
+    video_duration = models.IntegerField(default=0)
+
+    class Meta:  # NOQA
+        unique_together = ('course', 'video_block_id')
+
+    def __unicode__(self):  # NOQA
+        return u'{} {}'.format(self.course, self.video_block_id)

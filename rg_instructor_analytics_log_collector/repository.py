@@ -45,10 +45,10 @@ class IRepository(object):
                     'user_name': json_log.get('username', json_log.get('context', {}).get('username'))
                 })
             except ValueError as e:
-                log.error('can not parse json from the log string (`{0}`)\n\t{}'.format(log_string, repr(e)))
+                log.error('can not parse json from the log string ({})\n\t{}'.format(log_string, repr(e)))
                 return
             except (IndexError, KeyError) as e:
-                log.exception('corrupted structure of the log json (`{}`)\n\t{}'.format(log_string, repr(e)))
+                log.exception('corrupted structure of the log json ({})\n\t{}'.format(log_string, repr(e)))
             if len(log_buf) >= self._get_logs_batch_size():
                 self.store_new_log_message(log_buf)
                 log_buf = []
