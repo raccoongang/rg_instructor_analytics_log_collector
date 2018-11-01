@@ -8,7 +8,7 @@ import openedx.core.djangoapps.xmodule_django.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rg_instructor_analytics_log_collector', '0004_lastprocessedlog'),
+        ('rg_instructor_analytics_log_collector', '0006_merge'),
     ]
 
     operations = [

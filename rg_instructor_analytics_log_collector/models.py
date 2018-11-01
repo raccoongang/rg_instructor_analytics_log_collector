@@ -115,7 +115,7 @@ class LastProcessedLog(models.Model):
 
 class VideoViewsByUser(models.Model):
     """
-    User's ........
+    User's Video Views info.
     """
 
     course = CourseKeyField(max_length=255)
@@ -133,7 +133,7 @@ class VideoViewsByUser(models.Model):
 
 class VideoViewsByBlock(models.Model):
     """
-    User's ........
+    Block's Video Views info.
     """
 
     course = CourseKeyField(max_length=255)
