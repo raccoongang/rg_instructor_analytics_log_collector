@@ -1,9 +1,9 @@
 """
 Processor module.
 """
+from datetime import datetime
 import logging
 import operator
-from datetime import datetime
 import time
 
 from rg_instructor_analytics_log_collector.processors.discussion_pipeline import DiscussionPipeline
