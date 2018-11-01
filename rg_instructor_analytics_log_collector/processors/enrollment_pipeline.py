@@ -55,7 +55,7 @@ class EnrollmentPipeline(BasePipeline):
         if last_processed_log_date:
             query = query.filter(created__gte=last_processed_log_date)
 
-        return query.order_by('log_time').all()
+        return query.order_by('log_time')
 
     def _format_as_edx_event(self, record):
         """

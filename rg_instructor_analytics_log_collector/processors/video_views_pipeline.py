@@ -7,7 +7,7 @@ import logging
 from opaque_keys.edx.keys import CourseKey
 
 from rg_instructor_analytics_log_collector.constants import Events
-from rg_instructor_analytics_log_collector.models import LastProcessedLog, VideoViewsByUser, VideoViewsByBlock, LogTable
+from rg_instructor_analytics_log_collector.models import LastProcessedLog, LogTable, VideoViewsByBlock, VideoViewsByUser
 from rg_instructor_analytics_log_collector.processors.base_pipeline import BasePipeline
 
 log = logging.getLogger(__name__)
@@ -17,6 +17,7 @@ class VideoViewsPipeline(BasePipeline):
     """
     VideoViews stats Processor.
     """
+
     alias = 'video_views'
     supported_types = Events.VIDEO_VIEW_EVENTS
 
@@ -62,7 +63,6 @@ class VideoViewsPipeline(BasePipeline):
         """
         Save Video Views info to the database.
         """
-
         course = CourseKey.from_string(record['course_id'])
         video_views_by_user, created_video_user = VideoViewsByUser.objects.get_or_create(
             course=course,

@@ -1,10 +1,14 @@
+"""
+Collection of the discussion pipeline.
+"""
+
 import json
 import logging
 
 from opaque_keys.edx.keys import CourseKey
 
 from rg_instructor_analytics_log_collector.constants import Events
-from rg_instructor_analytics_log_collector.models import LastProcessedLog, DiscussionActivity, LogTable
+from rg_instructor_analytics_log_collector.models import DiscussionActivity, LastProcessedLog, LogTable
 from rg_instructor_analytics_log_collector.processors.base_pipeline import BasePipeline
 
 
@@ -29,7 +33,7 @@ class DiscussionPipeline(BasePipeline):
             processor=LastProcessedLog.DISCUSSION_ACTIVITY
         ).first()
 
-        return last_processed_log_table and last_processed_log_table.log_table.log_time
+        return last_processed_log_table and last_processed_log_table.log_table.created
 
     def get_query(self):
         """
@@ -61,6 +65,9 @@ class DiscussionPipeline(BasePipeline):
         }
 
     def push_to_database(self, record, db_context):
+        """
+        Get or create Discussion Activity of User.
+        """
         DiscussionActivity.objects.get_or_create(**record)
 
     def update_last_processed_log(self, last_record):

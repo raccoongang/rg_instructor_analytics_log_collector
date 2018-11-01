@@ -6,8 +6,6 @@ from django.db import connection, models
 
 from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
 
-from rg_instructor_analytics_log_collector.constants import Events
-
 
 class BulkInsertManager(models.Manager):
     """
@@ -151,7 +149,7 @@ class VideoViewsByBlock(models.Model):
 
 class DiscussionActivity(models.Model):
     """
-    Track specific user activities
+    Track specific user activities.
     """
 
     event_type = models.CharField(max_length=255)

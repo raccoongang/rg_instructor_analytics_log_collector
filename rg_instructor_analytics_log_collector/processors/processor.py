@@ -3,11 +3,11 @@ Processor module.
 """
 import logging
 import operator
-import time
 from datetime import datetime
+import time
 
-from rg_instructor_analytics_log_collector.processors.enrollment_pipeline import EnrollmentPipeline
 from rg_instructor_analytics_log_collector.processors.discussion_pipeline import DiscussionPipeline
+from rg_instructor_analytics_log_collector.processors.enrollment_pipeline import EnrollmentPipeline
 from rg_instructor_analytics_log_collector.processors.video_views_pipeline import VideoViewsPipeline
 
 log = logging.getLogger(__name__)
