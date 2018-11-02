@@ -1,16 +1,14 @@
 """
 Processor module.
 """
+from datetime import datetime
 import logging
 import operator
 import time
-from datetime import datetime
 
-from django.db.models import Q
-
-from rg_instructor_analytics_log_collector.models import LogTable
-from rg_instructor_analytics_log_collector.processors.base_pipeline import EnrollmentPipeline
 from rg_instructor_analytics_log_collector.processors.discussion_pipeline import DiscussionPipeline
+from rg_instructor_analytics_log_collector.processors.enrollment_pipeline import EnrollmentPipeline
+from rg_instructor_analytics_log_collector.processors.video_views_pipeline import VideoViewsPipeline
 
 log = logging.getLogger(__name__)
 
@@ -22,6 +20,7 @@ class Processor(object):
 
     available_pipelines = [
         EnrollmentPipeline(),
+        VideoViewsPipeline(),
         DiscussionPipeline()
     ]
 
@@ -35,23 +34,6 @@ class Processor(object):
         super(Processor, self).__init__()
         self.sleep_time = sleep_time
         self.pipelinies = filter(lambda x: x.alias in alias_list, self.available_pipelines)
-
-    def _get_query_for_pipeline(self, pipeline):
-        """
-        Return list of the raw logs wit type, that suitable for the given pipeline.
-        """
-        type_request = None
-        for pipeline_type in pipeline.supported_types:
-            if type_request is None:
-                type_request = Q(message_type__contains=pipeline_type)
-            else:
-                type_request |= Q(message_type__contains=pipeline_type)
-
-        query = LogTable.objects.filter(type_request)
-        last_processed_log_date = pipeline.retrieve_last_date()
-        if last_processed_log_date:
-            query = query.filter(created__gte=last_processed_log_date)
-        return query.order_by('log_time')
 
     def _sort(self, ordering, records):
         """
@@ -77,7 +59,7 @@ class Processor(object):
         while True:
             for pipeline in self.pipelinies:
                 logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
-                records = self._get_query_for_pipeline(pipeline)
+                records = pipeline.get_query()
 
                 if not records:
                     logging.info('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
