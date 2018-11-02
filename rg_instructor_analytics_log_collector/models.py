@@ -1,7 +1,7 @@
 """
 Models of the RG analytics.
 """
-
+from django.core.validators import validate_comma_separated_integer_list
 from django.db import connection, models
 
 from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
@@ -116,9 +116,9 @@ class VideoViewsByUser(models.Model):
     User's Video Views info.
     """
 
-    course = CourseKeyField(max_length=255)
-    user_id = models.IntegerField()
-    video_block_id = models.CharField(max_length=255)
+    course = CourseKeyField(max_length=255, db_index=True)
+    user_id = models.IntegerField(db_index=True)
+    video_block_id = models.CharField(max_length=255, db_index=True)
     is_completed = models.BooleanField(default=False)
     viewed_time = models.IntegerField(default=0)
 
@@ -134,8 +134,8 @@ class VideoViewsByBlock(models.Model):
     Block's Video Views info.
     """
 
-    course = CourseKeyField(max_length=255)
-    video_block_id = models.CharField(max_length=255)
+    course = CourseKeyField(max_length=255, db_index=True)
+    video_block_id = models.CharField(max_length=255, db_index=True)
     count_full_viewed = models.IntegerField(default=0)
     count_part_viewed = models.IntegerField(default=0)
     video_duration = models.IntegerField(default=0)
@@ -147,16 +147,34 @@ class VideoViewsByBlock(models.Model):
         return u'{} {}'.format(self.course, self.video_block_id)
 
 
+class VideoViewsByDay(models.Model):
+    """
+    Day's Video Views info.
+    """
+
+    course = CourseKeyField(max_length=255, db_index=True)
+    video_block_id = models.CharField(max_length=255, db_index=True)
+    day = models.DateField(db_index=True)
+    total = models.IntegerField(default=0)
+    users_ids = models.TextField(blank=True, null=True, validators=[validate_comma_separated_integer_list])
+
+    class Meta:  # NOQA
+        unique_together = ('course', 'video_block_id', 'day')
+
+    def __unicode__(self):  # NOQA
+        return u'{}, {}, day - {}'.format(self.course, self.video_block_id, self.day)
+
+
 class DiscussionActivity(models.Model):
     """
     Track specific user activities.
     """
 
     event_type = models.CharField(max_length=255)
-    user_id = models.IntegerField()
+    user_id = models.IntegerField(db_index=True)
     course = CourseKeyField(max_length=255, db_index=True)
     category_id = models.CharField(max_length=255, blank=True, null=True)
-    commentable_id = models.CharField(max_length=255)
+    commentable_id = models.CharField(max_length=255, db_index=True)
     discussion_id = models.CharField(max_length=255)
     thread_type = models.CharField(max_length=255, blank=True, null=True)
     log_time = models.DateTimeField()
