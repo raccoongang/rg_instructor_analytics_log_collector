@@ -18,7 +18,8 @@ class Events(object):
     FORUM_THREAD_CREATED = 'edx.forum.thread.created'
     FORUM_THREAD_VOTED = 'edx.forum.thread.voted'
 
-    USER_STARTED_VIEW_VIDEO = 'pause_video'
+    USER_STARTED_VIEW_VIDEO = 'play_video'
+    USER_PAUSED_VIEW_VIDEO = 'pause_video'
     USER_FINISHED_WATCH_VIDEO = 'stop_video'
 
     ENROLLMENT_EVENTS = [USER_ENROLLED,
@@ -31,4 +32,5 @@ class Events(object):
                          FORUM_RESPONSE_VOTED]
 
     VIDEO_VIEW_EVENTS = [USER_STARTED_VIEW_VIDEO,
+                         USER_PAUSED_VIEW_VIDEO,
                          USER_FINISHED_WATCH_VIDEO]
