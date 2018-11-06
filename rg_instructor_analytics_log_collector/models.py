@@ -181,3 +181,19 @@ class DiscussionActivity(models.Model):
 
     def __unicode__(self):  # NOQA
         return u'{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)
+
+
+class DiscussionActivityByDay(models.Model):
+    """
+    Day's Discussion Activities info.
+    """
+
+    course = CourseKeyField(max_length=255, db_index=True)
+    day = models.DateField(db_index=True)
+    total = models.IntegerField(default=0)
+
+    class Meta:  # NOQA
+        unique_together = ('course', 'day')
+
+    def __unicode__(self):  # NOQA
+        return u'{},  day - {}'.format(self.course, self.day)
