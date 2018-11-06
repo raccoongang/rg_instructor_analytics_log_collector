@@ -8,7 +8,7 @@ from opaque_keys.edx.keys import CourseKey
 
 from rg_instructor_analytics_log_collector.constants import Events
 from rg_instructor_analytics_log_collector.models import LastProcessedLog, LogTable, VideoViewsByBlock, \
-    VideoViewsByUser, VideoViewsByDay
+    VideoViewsByDay, VideoViewsByUser
 from rg_instructor_analytics_log_collector.processors.base_pipeline import BasePipeline
 
 log = logging.getLogger(__name__)
