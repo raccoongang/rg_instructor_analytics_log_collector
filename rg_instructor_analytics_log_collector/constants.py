@@ -21,14 +21,34 @@ class Events(object):
     USER_STARTED_VIEW_VIDEO = 'pause_video'
     USER_FINISHED_WATCH_VIDEO = 'stop_video'
 
-    ENROLLMENT_EVENTS = [USER_ENROLLED,
-                         USER_UNENROLLED]
+    SEQ_GOTO = 'seq_goto'
+    SEQ_NEXT = 'seq_next'
+    SEQ_PREV = 'seq_prev'
+    UI_SEQ_NEXT = 'edx.ui.lms.sequence.next_selected'
+    UI_SEQ_PREV = 'edx.ui.lms.sequence.previous_selected'
 
-    DISCUSSION_EVENTS = [FORUM_THREAD_CREATED,
-                         FORUM_COMMENT_CREATED,
-                         FORUM_RESPONSE_CREATED,
-                         FORUM_THREAD_VOTED,
-                         FORUM_RESPONSE_VOTED]
+    ENROLLMENT_EVENTS = [
+        USER_ENROLLED,
+        USER_UNENROLLED
+    ]
 
-    VIDEO_VIEW_EVENTS = [USER_STARTED_VIEW_VIDEO,
-                         USER_FINISHED_WATCH_VIDEO]
+    DISCUSSION_EVENTS = [
+        FORUM_THREAD_CREATED,
+        FORUM_COMMENT_CREATED,
+        FORUM_RESPONSE_CREATED,
+        FORUM_THREAD_VOTED,
+        FORUM_RESPONSE_VOTED
+    ]
+
+    VIDEO_VIEW_EVENTS = [
+        USER_STARTED_VIEW_VIDEO,
+        USER_FINISHED_WATCH_VIDEO
+    ]
+
+    NAVIGATIONAL_EVENTS = [
+        SEQ_GOTO,
+        SEQ_NEXT,
+        SEQ_PREV,
+        UI_SEQ_NEXT,
+        UI_SEQ_PREV,
+    ]

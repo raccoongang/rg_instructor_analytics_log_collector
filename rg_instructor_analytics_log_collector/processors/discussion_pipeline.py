@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 class DiscussionPipeline(BasePipeline):
     """
-    Enrollment stats Processor.
+    Discussion stats Processor.
     """
 
     alias = 'discussion'
@@ -39,7 +39,7 @@ class DiscussionPipeline(BasePipeline):
         """
         Return list of the raw logs with type, that suitable for the given pipeline.
         """
-        query = LogTable.objects.filter(message_type__in=Events.DISCUSSION_EVENTS)
+        query = LogTable.objects.filter(message_type__in=self.supported_types)
         last_processed_log_date = self.retrieve_last_date()
 
         if last_processed_log_date:

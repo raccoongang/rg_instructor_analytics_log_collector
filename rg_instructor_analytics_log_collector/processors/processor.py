@@ -8,6 +8,7 @@ import time
 
 from rg_instructor_analytics_log_collector.processors.discussion_pipeline import DiscussionPipeline
 from rg_instructor_analytics_log_collector.processors.enrollment_pipeline import EnrollmentPipeline
+from rg_instructor_analytics_log_collector.processors.student_step_pipeline import StudentStepPipeline
 from rg_instructor_analytics_log_collector.processors.video_views_pipeline import VideoViewsPipeline
 
 log = logging.getLogger(__name__)
@@ -21,7 +22,8 @@ class Processor(object):
     available_pipelines = [
         EnrollmentPipeline(),
         VideoViewsPipeline(),
-        DiscussionPipeline()
+        DiscussionPipeline(),
+        StudentStepPipeline()
     ]
 
     def __init__(self, alias_list, sleep_time):
@@ -64,7 +66,6 @@ class Processor(object):
                 if not records:
                     logging.info('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
                     continue
-
                 last_record = records.last()
                 # Format raw log to the internal format.
                 records = filter(None, [pipeline.format(m) for m in records])
