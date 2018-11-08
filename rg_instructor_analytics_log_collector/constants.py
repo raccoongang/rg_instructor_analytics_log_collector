@@ -10,11 +10,8 @@ class Events(object):
 
     USER_ENROLLED = 'edx.course.enrollment.activated'
     USER_UNENROLLED = 'edx.course.enrollment.deactivated'
-    # This event type coincides with this line is not completely, only partially.
-    ADMIN_ENROLL_UNENROLL = '/admin/student/courseenrollment/'
 
     ENROLLMENT_EVENTS = [
         USER_ENROLLED,
-        USER_UNENROLLED,
-        ADMIN_ENROLL_UNENROLL
+        USER_UNENROLLED
     ]

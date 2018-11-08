@@ -50,6 +50,9 @@ class EnrollmentByDay(models.Model):
         unique_together = ('course', 'day',)
         ordering = ['-day']
 
+    def __unicode__(self):  # NOQA
+        return u'{} {}'.format(self.day, self.course)
+
 
 class LastProcessedLog(models.Model):
     """

@@ -37,11 +37,7 @@ class Processor(object):
         """
         Return list of the raw logs wit type, that suitable for the given pipeline.
         """
-        q_filter = Q()
-        for pipeline_type in pipeline.supported_types:
-            q_filter = q_filter | Q(message_type__contains=pipeline_type)
-
-        query = LogTable.objects.filter(q_filter)
+        query = LogTable.objects.filter(message_type__in=pipeline.supported_types)
         last_processed_log_date = pipeline.retrieve_last_date()
 
         if last_processed_log_date:

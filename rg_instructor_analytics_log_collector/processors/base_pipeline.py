@@ -85,30 +85,14 @@ class EnrollmentPipeline(BasePipeline):
         """
         Format raw log to the internal format.
         """
-        formatted_record = None
         event_body = json.loads(record.log_message)
 
-        if record.message_type not in [Events.USER_ENROLLED, Events.USER_UNENROLLED]:
-            try:
-                event_info = json.loads(event_body['event'])['POST']
-                formatted_record = {
-                    'is_enrolled': event_info.get('is_active', ['off'])[0] == 'on',
-                    'course': event_info['course_id'][0],
-                }
-            except (IndexError, KeyError, ValueError) as e:
-                log.debug('Can not parse enrollment information from the request event. {}, {}'.format(
-                    event_body, repr(e)
-                ))
-        else:
-            formatted_record = {
-                'is_enrolled': record.message_type == Events.USER_ENROLLED,
-                'course': event_body['event']['course_id'],
-            }
-
-        if formatted_record:
-            formatted_record['log_time'] = record.log_time
-
-        return formatted_record
+        return {
+            'is_enrolled': record.message_type == Events.USER_ENROLLED,
+            'course': event_body['event']['course_id'],
+            'log_time': record.log_time,
+            'user': event_body['event']['user_id']
+        }
 
     def push_to_database(self, record):
         """
@@ -125,7 +109,7 @@ class EnrollmentPipeline(BasePipeline):
         enrollment_for_the_last_day = EnrollmentByDay.objects.filter(
             course=course,
             day__lt=day_state.day
-        ).first()
+        ).order_by('day').last()
 
         enrollment_for_the_following_days = EnrollmentByDay.objects.filter(
             course=course,
