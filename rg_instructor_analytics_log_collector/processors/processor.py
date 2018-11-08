@@ -3,7 +3,6 @@ Processor module.
 """
 from datetime import datetime
 import logging
-import operator
 import time
 
 from django.db.models import Q
@@ -38,35 +37,17 @@ class Processor(object):
         """
         Return list of the raw logs wit type, that suitable for the given pipeline.
         """
-        type_request = None
+        q_filter = Q()
         for pipeline_type in pipeline.supported_types:
-            if type_request is None:
-                type_request = Q(message_type__contains=pipeline_type)
-            else:
-                type_request |= Q(message_type__contains=pipeline_type)
+            q_filter = q_filter | Q(message_type__contains=pipeline_type)
 
-        query = LogTable.objects.filter(type_request)
+        query = LogTable.objects.filter(q_filter)
         last_processed_log_date = pipeline.retrieve_last_date()
+
         if last_processed_log_date:
-            query = query.filter(created__gte=last_processed_log_date)
-        return query.order_by('log_time')
+            query = query.filter(created__gt=last_processed_log_date)
 
-    def _sort(self, ordering, records):
-        """
-        Sort list of the records with given order list.
-
-        :param ordering: list where each record - name of the field for sort.
-        For reverse sort add to the start of the field `-` character.
-
-        :param records: list of the unsorted records.
-        """
-        for order in ordering:
-            reverse = False
-            if order.startswith('-'):
-                reverse = True
-                order = order[1:]
-            records.sort(reverse=reverse, key=operator.itemgetter(order))
-        return records
+        return query.order_by('created')
 
     def run(self):
         """
@@ -77,17 +58,16 @@ class Processor(object):
                 logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
                 records = self._get_query_for_pipeline(pipeline)
                 last_record = records.last()
+
                 if not records:
+                    logging.info('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
                     continue
-                if pipeline.format:  # ? getattr / hasattr
-                    records = filter(None, [pipeline.format(m) for m in records])
-                if pipeline.ordered_fields:
-                    records = self._sort(pipeline.ordered_fields, records)
-                if pipeline.aggregate:
-                    records = pipeline.aggregate(records)
-                for m in records:
-                    db_context = pipeline.load_database_contex and pipeline.load_database_contex(m) or None
-                    pipeline.push_to_database(m, db_context)
+
+                records = filter(None, [pipeline.format(record) for record in records])
+
+                for record in records:
+                    pipeline.push_to_database(record)
+
                 pipeline.update_last_processed_log(last_record)
                 logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
             time.sleep(self.sleep_time)
