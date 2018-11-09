@@ -5,8 +5,6 @@ from datetime import datetime
 import logging
 import time
 
-from django.db.models import Q
-
 from rg_instructor_analytics_log_collector.models import LogTable
 from rg_instructor_analytics_log_collector.processors.base_pipeline import EnrollmentPipeline
 
