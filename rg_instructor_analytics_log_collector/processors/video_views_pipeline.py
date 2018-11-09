@@ -7,8 +7,8 @@ import logging
 from opaque_keys.edx.keys import CourseKey
 
 from rg_instructor_analytics_log_collector.constants import Events
-from rg_instructor_analytics_log_collector.models import LastProcessedLog, LogTable, VideoViewsByBlock, \
-    VideoViewsByDay, VideoViewsByUser
+from rg_instructor_analytics_log_collector.models import LastProcessedLog, VideoViewsByBlock, VideoViewsByDay, \
+    VideoViewsByUser
 from rg_instructor_analytics_log_collector.processors.base_pipeline import BasePipeline
 
 log = logging.getLogger(__name__)
@@ -21,30 +21,7 @@ class VideoViewsPipeline(BasePipeline):
 
     alias = 'video_views'
     supported_types = Events.VIDEO_VIEW_EVENTS
-
-    def retrieve_last_date(self):
-        """
-        Fetch the moment of time daily video views were lastly updated.
-
-        :return: DateTime or None
-        """
-        last_processed_log_table = LastProcessedLog.objects.filter(
-            processor=LastProcessedLog.VIDEO_VIEWS
-        ).first()
-
-        return last_processed_log_table and last_processed_log_table.log_table.created
-
-    def get_query(self):
-        """
-        Return list of the raw logs with type, that suitable for the given pipeline.
-        """
-        query = LogTable.objects.filter(message_type__in=Events.VIDEO_VIEW_EVENTS)
-        last_processed_log_date = self.retrieve_last_date()
-
-        if last_processed_log_date:
-            query = query.filter(created__gte=last_processed_log_date)
-
-        return query.order_by('log_time')
+    processor_name = LastProcessedLog.VIDEO_VIEWS
 
     def format(self, record):
         """
@@ -62,7 +39,7 @@ class VideoViewsPipeline(BasePipeline):
             'event_type': record.message_type
         }
 
-    def push_to_database(self, record, db_context):
+    def push_to_database(self, record):
         """
         Save Video Views info to the database.
         """
@@ -117,11 +94,3 @@ class VideoViewsPipeline(BasePipeline):
                     video_views_by_block.count_full_viewed += 1
                     video_views_by_block.video_duration = video_views_by_user.viewed_time
                     video_views_by_block.save()
-
-    def update_last_processed_log(self, last_record):
-        """
-        Create or update last processed LogTable by Processor.
-        """
-        if last_record:
-            LastProcessedLog.objects.update_or_create(processor=LastProcessedLog.VIDEO_VIEWS,
-                                                      defaults={'log_table': last_record})
