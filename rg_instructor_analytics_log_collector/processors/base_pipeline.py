@@ -4,6 +4,8 @@ Collection of the base pipelines.
 
 from abc import ABCMeta, abstractmethod
 
+from rg_instructor_analytics_log_collector.models import LogTable, LastProcessedLog
+
 
 class BasePipeline(object):
     """
@@ -25,21 +27,36 @@ class BasePipeline(object):
     https://edx.readthedocs.io/projects/devdata/en/stable/internal_data_formats/event_list.html#event-list
     """
     supported_types = None
+    """
+    Processor name for the last processed LogTable.
+    """
+    processor_name = None
 
-    @abstractmethod
     def retrieve_last_date(self):
         """
-        Return date of the last processed record (or None for the first run).
-        """
-        pass
+        Fetch the moment of time daily enrollments were lastly updated.
 
-    @abstractmethod
+        :return: DateTime or None
+        """
+        last_processed_log_table = LastProcessedLog.objects.filter(
+            processor=self.processor_name
+        ).first()
+
+        return last_processed_log_table and last_processed_log_table.log_table.created
+
     def get_query(self):
         """
         Return list of the raw logs with type, that suitable for the given pipeline.
         """
-        pass
+        query = LogTable.objects.filter(message_type__in=self.supported_types)
+        last_processed_log_date = self.retrieve_last_date()
 
+        if last_processed_log_date:
+            query = query.filter(created__gt=last_processed_log_date)
+
+        return query.order_by('created')
+
+    @abstractmethod
     def format(self, record):
         """
         Process raw message with different format to the single format.
@@ -50,36 +67,19 @@ class BasePipeline(object):
         :param record:  raw log record.
         :return: dictionary with consistent structure.
         """
-        return None
+        pass
 
-    @property
-    def ordered_fields(self):
-        """
-        Return list of the filed for sort.
-
-        If needed reverse sorting - use symbol `-` before field name.
-        """
-        return []
-
-    def aggregate(self, records):
-        """
-        Return generator with sutable agregated structure.
-
-        I.E. records can be grouped by course and day.
-
-        If function return None - the no aggregation needed.
-        """
-        return None
-
-    def load_database_contex(self, aggregated_records):
-        """
-        Return context, needed for final processing.
-
-        In this method pipeline must call databse for additional information.
-        """
-        return None
-
-    def push_to_database(self, aggregated_records, db_context):
+    @abstractmethod
+    def push_to_database(self, formatted_record):
         """
         Push to db final result.
         """
+        pass
+
+    def update_last_processed_log(self, last_record):
+        """
+        Create or update last processed LogTable by Processor.
+        """
+        if last_record:
+            LastProcessedLog.objects.update_or_create(processor=self.processor_name,
+                                                      defaults={'log_table': last_record})
