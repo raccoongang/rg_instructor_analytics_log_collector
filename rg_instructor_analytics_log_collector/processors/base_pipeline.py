@@ -4,7 +4,7 @@ Collection of the base pipelines.
 
 from abc import ABCMeta, abstractmethod
 
-from rg_instructor_analytics_log_collector.models import LogTable, LastProcessedLog
+from rg_instructor_analytics_log_collector.models import LastProcessedLog, LogTable
 
 
 class BasePipeline(object):

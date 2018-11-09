@@ -34,7 +34,6 @@ class IRepository(object):
         """
         Parse the list of raw string into records inside a database.
         """
-        log_buf = []
         for log_string in log_strings_list:
             try:
                 json_log = json.loads(log_string)
