@@ -25,5 +25,4 @@ class LastProcessedLogAdmin(admin.ModelAdmin):
 admin.site.register(models.ProcessedZipLog, admin.ModelAdmin)
 admin.site.register(models.LogTable, admin.ModelAdmin)
 admin.site.register(models.EnrollmentByDay, admin.ModelAdmin)
-admin.site.register(models.EnrollmentByUser, admin.ModelAdmin)
 admin.site.register(models.LastProcessedLog, LastProcessedLogAdmin)

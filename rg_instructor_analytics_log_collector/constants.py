@@ -11,4 +11,7 @@ class Events(object):
     USER_ENROLLED = 'edx.course.enrollment.activated'
     USER_UNENROLLED = 'edx.course.enrollment.deactivated'
 
-    ENROLLMENT_EVENTS = [USER_ENROLLED, USER_UNENROLLED]
+    ENROLLMENT_EVENTS = [
+        USER_ENROLLED,
+        USER_UNENROLLED
+    ]
