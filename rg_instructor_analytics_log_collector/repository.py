@@ -51,7 +51,7 @@ class IRepository(object):
                 self.store_new_log_message(data)
 
     @abstractmethod
-    def store_new_log_message(self, parsed_logs_list):
+    def store_new_log_message(self, data):
         """
         Store list of the parsed log record into the database.
         """

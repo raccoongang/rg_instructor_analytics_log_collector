@@ -3,7 +3,6 @@ Processor module.
 """
 from datetime import datetime
 import logging
-import operator
 import time
 
 from rg_instructor_analytics_log_collector.processors.discussion_pipeline import DiscussionPipeline
@@ -37,23 +36,6 @@ class Processor(object):
         self.sleep_time = sleep_time
         self.pipelinies = filter(lambda x: x.alias in alias_list, self.available_pipelines)
 
-    def _sort(self, ordering, records):
-        """
-        Sort list of the records with given order list.
-
-        :param ordering: list where each record - name of the field for sort.
-        For reverse sort add to the start of the field `-` character.
-
-        :param records: list of the unsorted records.
-        """
-        for order in ordering:
-            reverse = False
-            if order.startswith('-'):
-                reverse = True
-                order = order[1:]
-            records.sort(reverse=reverse, key=operator.itemgetter(order))
-        return records
-
     def run(self):
         """
         Run loop of the processor.
@@ -69,13 +51,9 @@ class Processor(object):
                 last_record = records.last()
                 # Format raw log to the internal format.
                 records = filter(None, [pipeline.format(m) for m in records])
-                records = self._sort(pipeline.ordered_fields, records)
-                if pipeline.alias == EnrollmentPipeline.alias:
-                    records = pipeline.aggregate(records)
 
                 for record in records:
-                    db_context = pipeline.load_database_contex(record)
-                    pipeline.push_to_database(record, db_context)
+                    pipeline.push_to_database(record)
 
                 pipeline.update_last_processed_log(last_record)
                 logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))

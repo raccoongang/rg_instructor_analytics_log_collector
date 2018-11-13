@@ -18,7 +18,8 @@ class Events(object):
     FORUM_THREAD_CREATED = 'edx.forum.thread.created'
     FORUM_THREAD_VOTED = 'edx.forum.thread.voted'
 
-    USER_STARTED_VIEW_VIDEO = 'pause_video'
+    USER_STARTED_VIEW_VIDEO = 'play_video'
+    USER_PAUSED_VIEW_VIDEO = 'pause_video'
     USER_FINISHED_WATCH_VIDEO = 'stop_video'
 
     SEQ_GOTO = 'seq_goto'
@@ -29,7 +30,7 @@ class Events(object):
 
     ENROLLMENT_EVENTS = [
         USER_ENROLLED,
-        USER_UNENROLLED
+        USER_UNENROLLED,
     ]
 
     DISCUSSION_EVENTS = [
@@ -37,12 +38,13 @@ class Events(object):
         FORUM_COMMENT_CREATED,
         FORUM_RESPONSE_CREATED,
         FORUM_THREAD_VOTED,
-        FORUM_RESPONSE_VOTED
+        FORUM_RESPONSE_VOTED,
     ]
 
     VIDEO_VIEW_EVENTS = [
         USER_STARTED_VIEW_VIDEO,
-        USER_FINISHED_WATCH_VIDEO
+        USER_PAUSED_VIEW_VIDEO,
+        USER_FINISHED_WATCH_VIDEO,
     ]
 
     NAVIGATIONAL_EVENTS = [
