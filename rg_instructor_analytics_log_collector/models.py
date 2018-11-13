@@ -167,6 +167,7 @@ class StudentStepCourse(models.Model):
     """
     Track student's path through the course.
     """
+
     event_type = models.CharField(max_length=255)
     user_id = models.IntegerField(db_index=True)
     course = CourseKeyField(max_length=255, db_index=True)
