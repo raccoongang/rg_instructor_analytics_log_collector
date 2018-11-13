@@ -9,8 +9,7 @@ from opaque_keys.edx.keys import CourseKey, UsageKey
 from xmodule.modulestore.django import modulestore
 
 from rg_instructor_analytics_log_collector.constants import Events
-from rg_instructor_analytics_log_collector.models import DiscussionActivity, LastProcessedLog, LogTable, \
-    StudentStepCourse
+from rg_instructor_analytics_log_collector.models import LastProcessedLog, StudentStepCourse
 from rg_instructor_analytics_log_collector.processors.base_pipeline import BasePipeline
 
 
@@ -24,32 +23,12 @@ class StudentStepPipeline(BasePipeline):
 
     alias = 'student_step'
     supported_types = Events.NAVIGATIONAL_EVENTS
-
-    def retrieve_last_date(self):
-        """
-        Fetch the moment of time daily enrollments were lastly updated.
-
-        :return: DateTime or None
-        """
-        last_processed_log_table = LastProcessedLog.objects.filter(
-            processor=LastProcessedLog.STUDENT_STEP
-        ).first()
-
-        return last_processed_log_table and last_processed_log_table.log_table.created
-
-    def get_query(self):
-        """
-        Return list of the raw logs with type, that suitable for the given pipeline.
-        """
-        query = LogTable.objects.filter(message_type__in=self.supported_types)
-        last_processed_log_date = self.retrieve_last_date()
-
-        if last_processed_log_date:
-            query = query.filter(created__gt=last_processed_log_date)
-
-        return query.order_by('created')
+    processor_name = LastProcessedLog.STUDENT_STEP
 
     def get_units(self, event_body, event_type):
+        """
+        Get info of student path by units.
+        """
         current_unit = None
         target_unit = None
         subsection_id = event_body['id']
@@ -169,16 +148,8 @@ class StudentStepPipeline(BasePipeline):
 
         return data
 
-    def push_to_database(self, record, db_context):
+    def push_to_database(self, record):
         """
         Get or create StudentStepCourse.
         """
         StudentStepCourse.objects.get_or_create(**record)
-
-    def update_last_processed_log(self, last_record):
-        """
-        Create or update last processed LogTable by Processor.
-        """
-        if last_record:
-            LastProcessedLog.objects.update_or_create(processor=LastProcessedLog.STUDENT_STEP,
-                                                      defaults={'log_table': last_record})
