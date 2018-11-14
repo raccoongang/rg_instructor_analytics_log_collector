@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 class DiscussionPipeline(BasePipeline):
     """
-    Enrollment stats Processor.
+    Discussion stats Processor.
     """
 
     alias = 'discussion'

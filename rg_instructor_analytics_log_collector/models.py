@@ -62,11 +62,13 @@ class LastProcessedLog(models.Model):
     ENROLLMENT = 'EN'
     VIDEO_VIEWS = 'VI'
     DISCUSSION_ACTIVITY = 'DA'
+    STUDENT_STEP = 'ST'
 
     PROCESSOR_CHOICES = (
         (ENROLLMENT, 'Enrollment'),
         (VIDEO_VIEWS, 'VideoViews'),
         (DISCUSSION_ACTIVITY, 'Discussion activity'),
+        (STUDENT_STEP, 'Student step'),
     )
 
     log_table = models.ForeignKey(LogTable)
@@ -159,3 +161,20 @@ class DiscussionActivityByDay(models.Model):
 
     def __unicode__(self):  # NOQA
         return u'{},  day - {}'.format(self.course, self.day)
+
+
+class StudentStepCourse(models.Model):
+    """
+    Track student's path through the course.
+    """
+
+    event_type = models.CharField(max_length=255)
+    user_id = models.IntegerField(db_index=True)
+    course = CourseKeyField(max_length=255, db_index=True)
+    subsection_id = models.CharField(max_length=255)
+    current_unit = models.CharField(max_length=255)
+    target_unit = models.CharField(max_length=255)
+    log_time = models.DateTimeField()
+
+    def __unicode__(self):  # NOQA
+        return u'{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)

@@ -45,7 +45,6 @@ class IRepository(object):
                 }
             except ValueError as e:
                 log.error('can not parse json from the log string ({})\n\t{}'.format(log_string, repr(e)))
-                return
             except (IndexError, KeyError) as e:
                 log.exception('corrupted structure of the log json ({})\n\t{}'.format(log_string, repr(e)))
             else:
