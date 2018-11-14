@@ -6,6 +6,7 @@ import json
 import logging
 
 from opaque_keys.edx.keys import CourseKey, UsageKey
+from xmodule.modulestore.exceptions import ItemNotFoundError
 
 from rg_instructor_analytics_log_collector.constants import Events
 from rg_instructor_analytics_log_collector.models import LastProcessedLog, StudentStepCourse
@@ -33,7 +34,12 @@ class StudentStepPipeline(BasePipeline):
         subsection_id = event_body['id']
 
         sequential_locator = UsageKey.from_string(subsection_id)
-        subsection_block = modulestore().get_item(sequential_locator, depth=1)
+
+        try:
+            subsection_block = modulestore().get_item(sequential_locator, depth=1)
+        except ItemNotFoundError as err:
+            logging.info('Item {} not found.'.format(err))
+            return current_unit, target_unit, subsection_id
 
         if event_type in [Events.SEQ_GOTO, Events.SEQ_NEXT, Events.SEQ_PREV]:
             current_tab = event_body['old']
