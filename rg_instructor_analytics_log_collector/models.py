@@ -63,12 +63,14 @@ class LastProcessedLog(models.Model):
     VIDEO_VIEWS = 'VI'
     DISCUSSION_ACTIVITY = 'DA'
     STUDENT_STEP = 'ST'
+    COURSE_ACTIVITY = 'CA'
 
     PROCESSOR_CHOICES = (
         (ENROLLMENT, 'Enrollment'),
         (VIDEO_VIEWS, 'VideoViews'),
         (DISCUSSION_ACTIVITY, 'Discussion activity'),
         (STUDENT_STEP, 'Student step'),
+        (COURSE_ACTIVITY, 'Course activity'),
     )
 
     log_table = models.ForeignKey(LogTable)
@@ -124,6 +126,7 @@ class VideoViewsByDay(models.Model):
 
     class Meta:  # NOQA
         unique_together = ('course', 'video_block_id', 'day')
+        ordering = ['-day']
 
     def __unicode__(self):  # NOQA
         return u'{}, {}, day - {}'.format(self.course, self.video_block_id, self.day)
@@ -158,6 +161,7 @@ class DiscussionActivityByDay(models.Model):
 
     class Meta:  # NOQA
         unique_together = ('course', 'day')
+        ordering = ['-day']
 
     def __unicode__(self):  # NOQA
         return u'{},  day - {}'.format(self.course, self.day)
@@ -178,3 +182,37 @@ class StudentStepCourse(models.Model):
 
     def __unicode__(self):  # NOQA
         return u'{},  {},  user_id - {}'.format(self.event_type, self.course, self.user_id)
+
+
+class LastCourseVisitByUser(models.Model):
+    """
+    Track the date of the last visit the course by user.
+    """
+
+    user_id = models.IntegerField(db_index=True)
+    course = CourseKeyField(max_length=255, db_index=True)
+    log_time = models.DateTimeField()
+
+    class Meta:  # NOQA
+        unique_together = ('user_id', 'course')
+
+    def __unicode__(self):  # NOQA
+        return u'{}, user_id - {}'.format(self.course, self.user_id)
+
+
+class CourseVisitsByDay(models.Model):
+    """
+    Track the intensity of visits the course by the day.
+    """
+
+    course = CourseKeyField(max_length=255, db_index=True)
+    users_ids = models.TextField(default='', validators=[validate_comma_separated_integer_list])
+    day = models.DateField(db_index=True)
+    total = models.IntegerField(default=0)
+
+    class Meta:  # NOQA
+        unique_together = ('course', 'day')
+        ordering = ['-day']
+
+    def __unicode__(self):  # NOQA
+        return u'{},  day - {}'.format(self.course, self.day)
