@@ -31,7 +31,7 @@ Record
 DJANGO_SETTINGS_MODULE = lms.envs.devstack
 SERVICE_VARIANT = lms
 ```
-* Add to the django installed app
+* Add `rg_instructor_analytics_log_collector` to the `ADDL_INSTALLED_APPS` in `lms.env.json`
 * Install package in to the environment with edx-platform
 * Run migrations
 * Ensure app has an access to the log directory
@@ -52,5 +52,5 @@ If you install the Analytics at the first time, run `Processors` after `Log Watc
 # bash
 python run_processors.py [--aliases] [--sleep_time]
 ```
-- `aliases` - aliases list to run (i.e. `enrollment`)
+- `aliases` - aliases list to run (aliases of available processors:`enrollment`, `video_views`, `discussion`, `student_step`, `course_activity`)
 - `sleep_time` - log directory rescan period (seconds, default: 5 minutes).
