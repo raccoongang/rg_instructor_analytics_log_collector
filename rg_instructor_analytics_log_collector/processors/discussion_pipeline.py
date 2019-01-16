@@ -5,6 +5,7 @@ Collection of the discussion pipeline.
 import json
 import logging
 
+from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 
 from rg_instructor_analytics_log_collector.constants import Events
@@ -28,18 +29,26 @@ class DiscussionPipeline(BasePipeline):
         """
         Format raw log to the internal format.
         """
+        data = None
         event_body = json.loads(record.log_message)
 
-        return {
-            'event_type': record.message_type,
-            'user_id': event_body['context']['user_id'],
-            'course': CourseKey.from_string(event_body['context']['course_id']),
-            'category_id': event_body['event'].get('category_id'),
-            'commentable_id': event_body['event']['commentable_id'],
-            'discussion_id': event_body['event']['id'],
-            'thread_type': event_body['event'].get('thread_type'),
-            'log_time': record.log_time
-        }
+        try:
+            course = CourseKey.from_string(event_body['context']['course_id'])
+        except InvalidKeyError:
+            pass
+        else:
+            data = {
+                'event_type': record.message_type,
+                'user_id': event_body['context']['user_id'],
+                'course': course,
+                'category_id': event_body['event'].get('category_id'),
+                'commentable_id': event_body['event']['commentable_id'],
+                'discussion_id': event_body['event']['id'],
+                'thread_type': event_body['event'].get('thread_type'),
+                'log_time': record.log_time
+            }
+
+        return data
 
     def push_to_database(self, record):
         """
