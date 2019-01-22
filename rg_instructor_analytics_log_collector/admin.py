@@ -18,6 +18,7 @@ class EventTypeListFilter(admin.SimpleListFilter):
     parameter_name = 'event_type'
 
     def lookups(self, request, model_admin):
+
         """
         Return a list of tuples.
         The first element in each tuple is the coded value for the option that will
@@ -45,9 +46,10 @@ class EventTypeListFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
+
         """
-        Return the filtered queryset based on the value
-        provided in the query string and retrievable via
+        Return the filtered queryset.
+        Based on the value provided in the query string and retrievable via
         `self.value()`.
         """
         if self.value():
