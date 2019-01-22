@@ -18,9 +18,9 @@ class EventTypeListFilter(admin.SimpleListFilter):
     parameter_name = 'event_type'
 
     def lookups(self, request, model_admin):
-
         """
         Return a list of tuples.
+
         The first element in each tuple is the coded value for the option that will
         appear in the URL query. The second element is the
         human-readable name for the option that will appear
@@ -46,9 +46,9 @@ class EventTypeListFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-
         """
         Return the filtered queryset.
+
         Based on the value provided in the query string and retrievable via
         `self.value()`.
         """
