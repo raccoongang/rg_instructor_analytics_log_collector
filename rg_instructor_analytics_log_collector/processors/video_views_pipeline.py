@@ -43,7 +43,7 @@ class VideoViewsPipeline(BasePipeline):
 
     def is_valid(self, data):
         """
-        Validation of log record.
+        Validate a log record.
         """
         return data['user_id'] and data['course_id'] and data['block_id']
 

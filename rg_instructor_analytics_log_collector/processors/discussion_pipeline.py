@@ -52,7 +52,7 @@ class DiscussionPipeline(BasePipeline):
 
     def is_valid(self, data):
         """
-        Validation of log record.
+        Validate a log record.
         """
         return data['user_id'] and data['commentable_id']
 

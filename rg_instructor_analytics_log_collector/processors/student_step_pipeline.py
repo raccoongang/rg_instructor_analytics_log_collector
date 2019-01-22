@@ -162,7 +162,7 @@ class StudentStepPipeline(BasePipeline):
 
     def is_valid(self, data):
         """
-        Validation of log record.
+        Validate a log record.
         """
         return data['user_id'] and data['current_unit'] and data['target_unit']
 
