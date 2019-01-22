@@ -51,6 +51,9 @@ class DiscussionPipeline(BasePipeline):
         return data if self.is_valid(data) else None
 
     def is_valid(self, data):
+        """
+        Validation of log record.
+        """
         return data['user_id'] and data['commentable_id']
 
     def push_to_database(self, record):
