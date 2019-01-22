@@ -5,6 +5,7 @@ Collection of the discussion pipeline.
 import json
 import logging
 
+from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
 from rg_instructor_analytics_log_collector.constants import Events
@@ -33,7 +34,11 @@ class StudentStepPipeline(BasePipeline):
         target_unit = None
         subsection_id = event_body['id']
 
-        sequential_locator = UsageKey.from_string(subsection_id)
+        try:
+            sequential_locator = UsageKey.from_string(subsection_id)
+        except InvalidKeyError as err:
+            logging.info('InvalidKeyError (subsection_id - "{}") {}'.format(subsection_id, err))
+            return current_unit, target_unit, subsection_id
 
         try:
             subsection_block = modulestore().get_item(sequential_locator, depth=1)
@@ -136,22 +141,27 @@ class StudentStepPipeline(BasePipeline):
         """
         Format raw log to the internal format.
         """
-        data = None
         event_body = json.loads(record.log_message)
+
+        try:
+            course = CourseKey.from_string(event_body['context']['course_id'])
+        except InvalidKeyError:
+            return None
+
         current_unit, target_unit, subsection_id = self.get_units(json.loads(event_body['event']), record.message_type)
+        data = {
+            'event_type': record.message_type,
+            'user_id': event_body['context']['user_id'],
+            'course': course,
+            'subsection_id': subsection_id,
+            'current_unit': current_unit,
+            'target_unit': target_unit,
+            'log_time': record.log_time
+        }
+        return data if self.is_valid(data) else None
 
-        if current_unit and target_unit:
-            data = {
-                'event_type': record.message_type,
-                'user_id': event_body['context']['user_id'],
-                'course': CourseKey.from_string(event_body['context']['course_id']),
-                'subsection_id': subsection_id,
-                'current_unit': current_unit,
-                'target_unit': target_unit,
-                'log_time': record.log_time
-            }
-
-        return data
+    def is_valid(self, data):
+        return data['user_id'] and data['current_unit'] and data['target_unit']
 
     def push_to_database(self, record):
         """

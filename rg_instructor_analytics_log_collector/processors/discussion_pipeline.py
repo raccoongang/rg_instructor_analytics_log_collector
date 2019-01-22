@@ -48,7 +48,10 @@ class DiscussionPipeline(BasePipeline):
                 'log_time': record.log_time
             }
 
-        return data
+        return data if self.is_valid(data) else None
+
+    def is_valid(self, data):
+        return data['user_id'] and data['commentable_id']
 
     def push_to_database(self, record):
         """
