@@ -50,14 +50,15 @@ class Processor(object):
                 if not records:
                     logging.info('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
                     continue
-                last_record = records.last()
-                # Format raw log to the internal format.
-                records = filter(None, [pipeline.format(m) for m in records])
 
                 for record in records:
-                    pipeline.push_to_database(record)
+                    # Format raw log to the internal format.
+                    data_record = pipeline.format(record)
 
-                pipeline.update_last_processed_log(last_record)
+                    if data_record:
+                        pipeline.push_to_database(data_record)
+
+                pipeline.update_last_processed_log(record)
                 logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
 
             time.sleep(self.sleep_time)
