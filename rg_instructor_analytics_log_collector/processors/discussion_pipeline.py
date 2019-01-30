@@ -48,7 +48,7 @@ class DiscussionPipeline(BasePipeline):
                 'log_time': record.log_time
             }
 
-        return data if self.is_valid(data) else None
+        return data if data and self.is_valid(data) else None
 
     def is_valid(self, data):
         """
