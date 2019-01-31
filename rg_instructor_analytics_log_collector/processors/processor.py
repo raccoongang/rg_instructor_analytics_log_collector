@@ -47,7 +47,7 @@ class Processor(object):
                 logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
                 records = pipeline.get_query()
 
-                if not records:
+                if not records.exists():
                     logging.info('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
                     continue
 
