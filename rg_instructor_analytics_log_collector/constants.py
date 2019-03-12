@@ -27,6 +27,7 @@ class Events(object):
     SEQ_PREV = 'seq_prev'
     UI_SEQ_NEXT = 'edx.ui.lms.sequence.next_selected'
     UI_SEQ_PREV = 'edx.ui.lms.sequence.previous_selected'
+    UI_LINK_CLICKED = 'edx.ui.lms.link_clicked'
 
     ENROLLMENT_EVENTS = [
         USER_ENROLLED,
@@ -47,10 +48,14 @@ class Events(object):
         USER_FINISHED_WATCH_VIDEO,
     ]
 
-    NAVIGATIONAL_EVENTS = [
+    INTERNAL_NAVIGATION_EVENTS = [
         SEQ_GOTO,
         SEQ_NEXT,
-        SEQ_PREV,
+        SEQ_PREV
+    ]
+
+    NAVIGATIONAL_EVENTS = INTERNAL_NAVIGATION_EVENTS + [
         UI_SEQ_NEXT,
         UI_SEQ_PREV,
+        UI_LINK_CLICKED,
     ]
