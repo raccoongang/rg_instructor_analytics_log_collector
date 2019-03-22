@@ -1,7 +1,9 @@
 """
 Module for the provide general access to the storage for the logs (i.e. mySql).
 """
+
 from abc import ABCMeta, abstractmethod
+import hashlib
 import json
 import logging
 
@@ -43,6 +45,7 @@ class IRepository(object):
                     'log_message': log_string,
                     'user_name': json_log.get('username', json_log.get('context', {}).get('username'))
                 }
+                data['message_type_hash'] = hashlib.sha256(data['message_type']).hexdigest()
             except ValueError as e:
                 log.error('can not parse json from the log string ({})\n\t{}'.format(log_string, repr(e)))
             except (IndexError, KeyError) as e:
@@ -81,10 +84,10 @@ class MySQlRepository(IRepository):
         Store parsed logs into the database.
         """
         LogTable.objects.get_or_create(
-            message_type=data['message_type'],
+            message_type_hash=data['message_type_hash'],
             log_time=data['log_time'],
             user_name=data['user_name'],
-            defaults={'log_message': data['log_message']}
+            defaults={'log_message': data['log_message'], 'message_type': data['message_type']}
         )
 
     def mark_as_processed_source(self, source_name):
