@@ -1,8 +1,9 @@
 """
 Module for the provide general access to the storage for the logs (i.e. mySql).
 """
-import hashlib
+
 from abc import ABCMeta, abstractmethod
+import hashlib
 import json
 import logging
 

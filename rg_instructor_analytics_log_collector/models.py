@@ -19,6 +19,7 @@ class LogTable(models.Model):
     """
     Log Records parsed from tracking gzipped log file.
     """
+
     message_type_hash = models.CharField(max_length=255, db_index=True)
     message_type = models.TextField()
     log_time = models.DateTimeField(db_index=True)
