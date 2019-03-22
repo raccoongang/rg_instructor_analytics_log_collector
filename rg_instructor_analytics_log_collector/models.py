@@ -19,15 +19,15 @@ class LogTable(models.Model):
     """
     Log Records parsed from tracking gzipped log file.
     """
-
-    message_type = models.CharField(max_length=255, db_index=True)
+    message_type_hash = models.CharField(max_length=255, db_index=True)
+    message_type = models.TextField()
     log_time = models.DateTimeField(db_index=True)
     user_name = models.CharField(max_length=255, null=True, blank=True, db_index=True)
     log_message = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:  # NOQA
-        unique_together = ('message_type', 'log_time', 'user_name')
+        unique_together = ('message_type_hash', 'log_time', 'user_name')
         ordering = ['-log_time']
 
     def __unicode__(self):  # NOQA
