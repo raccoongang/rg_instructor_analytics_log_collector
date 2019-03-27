@@ -14,8 +14,7 @@ if RELEASE_LINE == 'hawthorn':
     from django.urls import resolve
     from django.urls.resolvers import Resolver404
 else:
-    from django.core.urlresolvers import resolve
-    from django.core.urlresolvers import Resolver404
+    from django.core.urlresolvers import resolve, Resolver404
 
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
