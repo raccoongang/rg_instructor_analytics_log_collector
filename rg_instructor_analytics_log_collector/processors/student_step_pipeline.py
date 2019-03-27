@@ -5,7 +5,18 @@ Collection of the discussion pipeline.
 import json
 import logging
 
-from django.urls import resolve, resolvers
+try:
+    from openedx.core.release import RELEASE_LINE
+except ImportError:
+    RELEASE_LINE = 'ficus'
+
+if RELEASE_LINE == 'hawthorn':
+    from django.urls import resolve
+    from django.urls.resolvers import Resolver404
+else:
+    from django.core.urlresolvers import resolve
+    from django.core.urlresolvers import Resolver404
+
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from six.moves.urllib.parse import urlparse
@@ -40,7 +51,7 @@ class StudentStepPipeline(BasePipeline):
             relative_url = urlparse(event_body.get('target_url', '')).path
             try:
                 url = resolve(relative_url)
-            except resolvers.Resolver404:
+            except Resolver404:
                 logging.info('Target URL "{}" not found.'.format(relative_url))
                 return current_unit, target_unit, subsection_id
             else:
