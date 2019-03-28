@@ -9,7 +9,11 @@ import hashlib
 def apply_hash(apps, schema_editor):
     LogTable = apps.get_model('rg_instructor_analytics_log_collector', 'LogTable')
     for log_table in LogTable.objects.all():
-        log_table.message_type_hash = hashlib.sha256(log_table.message_type).hexdigest()
+        try:
+            m_hash = hashlib.sha256(log_table.message_type).hexdigest()
+        except UnicodeEncodeError:
+            m_hash = hashlib.sha256(log_table.message_type.encode('utf-8')).hexdigest()
+        log_table.message_type_hash = m_hash
         log_table.save()
 
 
