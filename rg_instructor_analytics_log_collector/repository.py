@@ -44,7 +44,11 @@ class IRepository(object):
                     'log_message': log_string,
                     'user_name': json_log.get('username', json_log.get('context', {}).get('username'))
                 }
-                data['message_type_hash'] = hashlib.sha256(data['message_type']).hexdigest()
+                try:
+                    m_hash = hashlib.sha256(data['message_type']).hexdigest()
+                except UnicodeEncodeError:
+                    m_hash = hashlib.sha256(data['message_type'].encode('utf-8')).hexdigest()
+                data['message_type_hash'] = m_hash
             except ValueError as e:
                 log.error('can not parse json from the log string ({})\n\t{}'.format(log_string, repr(e)))
                 return
