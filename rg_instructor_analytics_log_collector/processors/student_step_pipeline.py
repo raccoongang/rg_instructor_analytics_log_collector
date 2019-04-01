@@ -78,6 +78,10 @@ class StudentStepPipeline(BasePipeline):
                 except ItemNotFoundError as err:
                     logging.info('Course {} not found.'.format(err))
                     return None, None, subsection_id
+                else:
+                    if not course:
+                        logging.info('Course {} not found.'.format(target_location.course_key))
+                        return None, None, subsection_id
 
                 for section in course.get_children():
                     if subsection_id:
@@ -103,6 +107,10 @@ class StudentStepPipeline(BasePipeline):
             except ItemNotFoundError as err:
                 logging.info('Item {} not found.'.format(err))
                 return current_unit, target_unit, subsection_id
+            else:
+                if not subsection_block:
+                    logging.info('Item {} not found.'.format(subsection_id))
+                    return current_unit, target_unit, subsection_id
 
         if event_type in Events.INTERNAL_NAVIGATION_EVENTS:
             current_tab = event_body['old']
