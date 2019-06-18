@@ -37,18 +37,27 @@ class CourseActivityPipeline(BasePipeline):
         """
         Format raw log to the internal format.
         """
-        formatted_record = None
+        data = None
         event_body = json.loads(record.log_message)
         try:
             course_id = event_body['context']['course_id']
             user_id = event_body['context']['user_id']
         except KeyError:
-            return formatted_record
+            return data
         else:
             if course_id and user_id:
-                formatted_record = {'course_id': course_id, 'user_id': user_id, 'log_time': record.log_time}
+                data = {'course_id': course_id, 'user_id': user_id, 'log_time': record.log_time}
 
-        return formatted_record
+        return data if data and self.is_valid(data) else None
+
+    def is_valid(self, data):
+        """
+        Validate a log record.
+        """
+        return data['user_id'] \
+            and data['course_id'] \
+            and data['log_time'] \
+            and data['event_type']
 
     def push_to_database(self, record):
         """

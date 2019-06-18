@@ -45,7 +45,11 @@ class VideoViewsPipeline(BasePipeline):
         """
         Validate a log record.
         """
-        return data['user_id'] and data['course_id'] and data['block_id']
+        return data['user_id'] \
+            and data['course_id'] \
+            and data['block_id'] \
+            and data['log_time'] \
+            and data['event_type']
 
     def push_to_database(self, record):
         """
