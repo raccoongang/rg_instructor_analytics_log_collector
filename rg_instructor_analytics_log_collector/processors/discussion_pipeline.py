@@ -54,7 +54,11 @@ class DiscussionPipeline(BasePipeline):
         """
         Validate a log record.
         """
-        return data['user_id'] and data['commentable_id']
+        return data['user_id'] \
+            and data['commentable_id'] \
+            and data['course'] \
+            and data['event_type'] \
+            and data['discussion_id']
 
     def push_to_database(self, record):
         """
