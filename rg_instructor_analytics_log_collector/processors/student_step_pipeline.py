@@ -234,7 +234,8 @@ class StudentStepPipeline(BasePipeline):
         """
         Validate a log record.
         """
-        return data['user_id'] and data['current_unit'] and data['target_unit'] and data['subsection_id']
+        return data['user_id'] and data['current_unit'] and data['target_unit'] and data['subsection_id'] \
+            and data['log_time'] and data['course'] and data['event_type']
 
     def push_to_database(self, record):
         """
