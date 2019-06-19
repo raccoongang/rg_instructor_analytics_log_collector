@@ -5,8 +5,6 @@ from datetime import datetime
 import logging
 import time
 
-from django.db.utils import IntegrityError
-
 from rg_instructor_analytics_log_collector.processors.course_activity_pipeline import CourseActivityPipeline
 from rg_instructor_analytics_log_collector.processors.discussion_pipeline import DiscussionPipeline
 from rg_instructor_analytics_log_collector.processors.enrollment_pipeline import EnrollmentPipeline
@@ -60,10 +58,10 @@ class Processor(object):
                     if data_record:
                         try:
                             pipeline.push_to_database(data_record)
-                        except IntegrityError as e:
-                            logging.error("An error occurred when pushing data to the database "
-                                          "by the {!s} pipeline: {!s}"
-                                          .format(pipeline.alias, e))
+                        except Exception as e:
+                            logging.error("An error occurred when pushing the record data to the database "
+                                          "by the {!s} pipeline: {!s}. Record data: {!s}"
+                                          .format(pipeline.alias, e, data_record))
                 pipeline.update_last_processed_log(record)
                 logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
 
