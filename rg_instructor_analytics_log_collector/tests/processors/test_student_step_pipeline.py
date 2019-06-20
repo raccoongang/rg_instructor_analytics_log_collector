@@ -46,7 +46,7 @@ class TestStudentStepPipeline(TestCase):
     def test_format(self, units_data, test_return_value, mock_get_units, mock_course_key):
         mock_course_key.return_value = "course_key"
         mock_get_units.return_value = units_data
-        self.assertEqual(self.pipeline.format(TestRecord()), test_return_value)
+        self.assertEqual(self.pipeline.format(TestRecord(record_type="student_step")), test_return_value)
 
     def tearDown(self):
         logging.disable(logging.NOTSET)

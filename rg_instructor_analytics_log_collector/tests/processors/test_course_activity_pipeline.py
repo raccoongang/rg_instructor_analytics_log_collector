@@ -2,7 +2,7 @@
 Test `CourseActivityPipeline` functionality.
 """
 import logging
-from unittest import skip, TestCase
+from unittest import TestCase
 
 from ddt import ddt, data, file_data, unpack
 from mock import patch
@@ -40,7 +40,8 @@ class TestCourseActivityPipeline(TestCase):
     @patch.object(CourseKey, "from_string")
     def test_format(self, course_id, user_id, test_return_value, mock_course_key):
         mock_course_key.return_value = "course_key"
-        self.assertEqual(self.pipeline.format(TestRecord(user_id=user_id,
+        self.assertEqual(self.pipeline.format(TestRecord(record_type="course_activity",
+                                                         user_id=user_id,
                                                          course_id=course_id)),
                          test_return_value)
 

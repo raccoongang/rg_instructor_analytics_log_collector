@@ -2,9 +2,9 @@
 Test discussion pipeline logic.
 """
 import logging
-from unittest import skip, TestCase
+from unittest import TestCase
 
-from ddt import ddt, data, file_data, unpack
+from ddt import ddt, file_data, unpack
 from mock import patch
 
 from rg_instructor_analytics_log_collector.processors.discussion_pipeline import CourseKey
@@ -27,6 +27,15 @@ class TestDiscussionPipeline(TestCase):
     def test_is_valid(self, entry):
         self.assertEqual(self.pipeline.is_valid(entry.get("data")), entry.get("is_valid"))
 
-    @skip("Skip till `TestRecord` is made pipeline-dependent")
-    def test_format(self):
-        pass
+    @patch.object(CourseKey, "from_string")
+    def test_format(self, mock_course_key):
+        mock_course_key.return_value = "course_key"
+        self.assertEqual(self.pipeline.format(TestRecord(record_type="discussion")),
+                         {'event_type': TestRecord.EVENT_TYPE,
+                          'user_id': TestRecord.USER_ID,
+                          'course': "course_key",
+                          'category_id': u"test_category_id",
+                          'commentable_id': u"test_commentable_id",
+                          'discussion_id': u"test_discussion_id",
+                          'thread_type': u'test_thread_type',
+                          'log_time': TestRecord.LOG_TIME})
