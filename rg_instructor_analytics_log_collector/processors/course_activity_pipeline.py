@@ -53,15 +53,15 @@ class CourseActivityPipeline(BasePipeline):
     def is_valid(self, data):
         """
         Validate a log record.
+
+        Returns:
+            results of validation (bool)
         """
-        if (
+        return super(CourseActivityPipeline, self).is_valid(
             data.get('user_id')
             and data.get('course_id')
             and data.get('log_time')
-        ):
-            return True
-        else:
-            return False
+        )
 
     def push_to_database(self, record):
         """
