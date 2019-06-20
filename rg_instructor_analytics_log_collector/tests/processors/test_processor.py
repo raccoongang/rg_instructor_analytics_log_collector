@@ -15,10 +15,16 @@ from rg_instructor_analytics_log_collector.processors.student_step_pipeline impo
 class TestRecords(object):
     """
     Dummy iterator class.
-
-    Also, certain business logic is overridden
-    for testing purposes.
     """
+
+    def __init__(self, records):
+        """
+        Init an object.
+
+        Arguments:
+            records: and iterable
+        """
+        self.records = records
 
     def __iter__(self):
         """
@@ -27,7 +33,10 @@ class TestRecords(object):
         Returns:
             iterator object to iterate over test records.
         """
-        return iter([1, 2, 3])  # TODO make it dynamically defined (and update tests respectively)
+        try:
+            return iter(self.records)
+        except TypeError:
+            print(self.records, " not iterable.")
 
     @staticmethod
     def exists():
@@ -46,8 +55,9 @@ class TestProcessor(TestCase):
         Processor.available_pipelines = [StudentStepPipeline()]
         self.processor = Processor(alias_list=["student_step"], sleep_time=1)
 
-    @data(({"test_key": "test_value"}, 3),
-          (None, 0))
+    @data(({"test_key": "test_value"}, [1, 2, 3], 3),
+          ({"test_key": "test_value"}, [1, 2], 2),
+          (None, [1, 2, 3], 0))
     @unpack
     @patch.object(BasePipeline, "get_query")
     @patch.object(StudentStepPipeline, "get_units")
@@ -57,6 +67,7 @@ class TestProcessor(TestCase):
     def test_process_push_to_database(
             self,
             format_data,
+            records,
             times_called,
             mock_update_last_processed_log,
             mock_push_to_database,
@@ -70,12 +81,11 @@ class TestProcessor(TestCase):
         mock_update_last_processed_log.return_value = None
         mock_push_to_database.return_value = None
         mock_get_units.return_value = (None, None, None)
-        mock_get_query.return_value = TestRecords()
+        mock_get_query.return_value = TestRecords(records)
 
         mock_format.return_value = format_data
 
         self.processor.process()
-        # TODO Also, ensure it's called as many times as there are records in the pipeline
         self.assertEqual(mock_push_to_database.call_count, times_called)
 
     # TODO implement
