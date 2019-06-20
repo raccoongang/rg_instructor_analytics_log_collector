@@ -38,31 +38,39 @@ class Processor(object):
         self.sleep_time = sleep_time
         self.pipelinies = filter(lambda x: x.alias in alias_list, self.available_pipelines)
 
+    def process(self):
+        """
+        Data processing logic.
+
+        Fetch data records from pipelines and
+        store them in a database.
+        """
+        for pipeline in self.pipelinies:
+            logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
+            records = pipeline.get_query()
+
+            if not records.exists():
+                logging.info('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
+                continue
+
+            for record in records:
+                # Format raw log to the internal format.
+                data_record = pipeline.format(record)
+
+                if data_record:
+                    try:
+                        pipeline.push_to_database(data_record)
+                    except Exception as e:
+                        logging.error("An error occurred when pushing the record data to the database "
+                                      "by the {!s} pipeline: {!s}. Record data: {!s}"
+                                      .format(pipeline.alias, e, data_record))
+            pipeline.update_last_processed_log(record)
+            logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
+
     def run(self):
         """
         Run loop of the processor.
         """
         while True:
-            for pipeline in self.pipelinies:
-                logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
-                records = pipeline.get_query()
-
-                if not records.exists():
-                    logging.info('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
-                    continue
-
-                for record in records:
-                    # Format raw log to the internal format.
-                    data_record = pipeline.format(record)
-
-                    if data_record:
-                        try:
-                            pipeline.push_to_database(data_record)
-                        except Exception as e:
-                            logging.error("An error occurred when pushing the record data to the database "
-                                          "by the {!s} pipeline: {!s}. Record data: {!s}"
-                                          .format(pipeline.alias, e, data_record))
-                pipeline.update_last_processed_log(record)
-                logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
-
+            self.process()
             time.sleep(self.sleep_time)
