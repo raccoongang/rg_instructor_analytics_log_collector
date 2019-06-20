@@ -237,7 +237,8 @@ class StudentStepPipeline(BasePipeline):
         Returns:
             results of validation (bool)
         """
-        if (data.get('user_id')
+        if (
+            data.get('user_id')
             and data.get('current_unit')
             and data.get('target_unit')
             and data.get('subsection_id')
