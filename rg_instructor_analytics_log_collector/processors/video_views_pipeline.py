@@ -48,13 +48,13 @@ class VideoViewsPipeline(BasePipeline):
         Returns:
             results of validation (bool)
         """
-        return super(VideoViewsPipeline, self).is_valid(
+        return True if (
             data.get('user_id')
             and data.get('course_id')
             and data.get('block_id')
             and data.get('log_time')
             and data.get('event_type')
-        )
+        ) else False
 
     def push_to_database(self, record):
         """

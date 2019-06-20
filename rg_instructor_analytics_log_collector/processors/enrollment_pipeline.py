@@ -45,10 +45,10 @@ class EnrollmentPipeline(BasePipeline):
         Returns:
             results of validation (bool)
         """
-        return super(EnrollmentPipeline, self).is_valid(
+        return True if (
             data.get('log_time')
             and data.get('course')
-        )
+        ) else False
 
     def push_to_database(self, record):
         """

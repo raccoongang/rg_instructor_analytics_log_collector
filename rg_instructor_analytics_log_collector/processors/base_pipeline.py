@@ -32,19 +32,6 @@ class BasePipeline(object):
     """
     processor_name = None
 
-    def is_valid(self, result):
-        """
-        Wrap validation results up to return bool.
-
-        Arguments:
-            result: scalar value with preliminary fields check
-                (delegated to subclasses).
-
-        Returns:
-            validation results (bool)
-        """
-        return True if result else False
-
     def retrieve_last_date(self):
         """
         Fetch the moment of time daily enrollments were lastly updated.

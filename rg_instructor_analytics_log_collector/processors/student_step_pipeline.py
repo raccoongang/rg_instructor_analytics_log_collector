@@ -237,7 +237,7 @@ class StudentStepPipeline(BasePipeline):
         Returns:
             results of validation (bool)
         """
-        return super(StudentStepPipeline, self).is_valid(
+        return True if (
             data.get('user_id')
             and data.get('current_unit')
             and data.get('target_unit')
@@ -245,7 +245,7 @@ class StudentStepPipeline(BasePipeline):
             and data.get('log_time')
             and data.get('course')
             and data.get('event_type')
-        )
+        ) else False
 
     def push_to_database(self, record):
         """
