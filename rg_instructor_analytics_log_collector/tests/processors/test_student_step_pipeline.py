@@ -1,14 +1,12 @@
-"""
-Test `StudentStepPipeline` functionality.
-"""
+"""Test `StudentStepPipeline` functionality."""
 import logging
 from unittest import TestCase
 
 from ddt import ddt, data, file_data, unpack
 from mock import patch
 
-from rg_instructor_analytics_log_collector.processors.student_step_pipeline import StudentStepPipeline
 from rg_instructor_analytics_log_collector.processors.student_step_pipeline import CourseKey
+from rg_instructor_analytics_log_collector.processors.student_step_pipeline import StudentStepPipeline
 from rg_instructor_analytics_log_collector.tests.processors.pipeline_test_utils import TestRecord
 
 

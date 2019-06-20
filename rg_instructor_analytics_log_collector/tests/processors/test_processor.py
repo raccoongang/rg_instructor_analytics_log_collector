@@ -1,14 +1,12 @@
-"""
-Test the `Processor` module.
-"""
+"""Test the `Processor` module."""
 import logging
 from unittest import TestCase
 
-from ddt import ddt, data, unpack
+from ddt import data, ddt, unpack
 from mock import patch
 
-from rg_instructor_analytics_log_collector.processors.processor import Processor
 from rg_instructor_analytics_log_collector.processors.base_pipeline import BasePipeline
+from rg_instructor_analytics_log_collector.processors.processor import Processor
 from rg_instructor_analytics_log_collector.processors.student_step_pipeline import StudentStepPipeline
 
 
@@ -25,7 +23,7 @@ class TestRecords(object):
         Init an object.
 
         Arguments:
-            records: and iterable
+            records: an iterable object.
         """
         self.records = records
 
@@ -44,15 +42,21 @@ class TestRecords(object):
     @staticmethod
     def exists():
         """
-        Allows for overriding a namesake method.
+        Allow for overriding a namesake method.
         """
         return True
 
 
 @ddt
 class TestProcessor(TestCase):
+    """
+    Test `Processor` logic.
+    """
 
     def setUp(self):
+        """
+        Prepare a test pipeline.
+        """
         logging.disable(logging.DEBUG)
         # Doesn't matter which one to pick
         Processor.available_pipelines = [StudentStepPipeline()]
@@ -92,4 +96,7 @@ class TestProcessor(TestCase):
         self.assertEqual(mock_push_to_database.call_count, times_called)
 
     def tearDown(self):
+        """
+        Re-enable logging.
+        """
         logging.disable(logging.NOTSET)

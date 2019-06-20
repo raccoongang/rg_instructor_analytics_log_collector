@@ -1,6 +1,4 @@
-"""
-Test `CourseActivityPipeline` functionality.
-"""
+"""Test `CourseActivityPipeline` functionality."""
 import logging
 from unittest import TestCase
 

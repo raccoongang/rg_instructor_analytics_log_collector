@@ -1,6 +1,4 @@
-"""
-Utility functionality to test pipelines.
-"""
+"""Utility functionality to test pipelines."""
 import json
 
 
@@ -10,6 +8,7 @@ class TestRecord(object):
 
     Encapsulates data fields for all pipeline.
     """
+
     LOG_TIME = 123
     USER_ID = 123
     EVENT_TYPE = "test_event_type"
@@ -21,6 +20,11 @@ class TestRecord(object):
                  user_id=USER_ID,
                  event_type=EVENT_TYPE,
                  course_id=COURSE_ID):
+        """
+        Initialise a test record object.
+
+        Facilitates objects mocking.
+        """
         self.record_type = record_type
         self.log_time = log_time
 
@@ -40,4 +44,9 @@ class TestRecord(object):
         self.message_type = event_type
 
     def log_message(self):
+        """
+        Return `log_message` value.
+
+        Facilitates objects mocking.
+        """
         return self.log_message

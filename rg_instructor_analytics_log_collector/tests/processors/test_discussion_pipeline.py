@@ -1,6 +1,4 @@
-"""
-Test discussion pipeline logic.
-"""
+"""Test discussion pipeline logic."""
 import logging
 from unittest import TestCase
 

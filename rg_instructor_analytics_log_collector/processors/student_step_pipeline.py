@@ -238,13 +238,13 @@ class StudentStepPipeline(BasePipeline):
             results of validation (bool)
         """
         return True if (
-            data.get('user_id')
-            and data.get('current_unit')
-            and data.get('target_unit')
-            and data.get('subsection_id')
-            and data.get('log_time')
-            and data.get('course')
-            and data.get('event_type')
+            data.get('user_id') and
+            data.get('current_unit') and
+            data.get('target_unit') and
+            data.get('subsection_id') and
+            data.get('log_time') and
+            data.get('course') and
+            data.get('event_type')
         ) else False
 
     def push_to_database(self, record):

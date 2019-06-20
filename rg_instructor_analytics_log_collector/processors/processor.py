@@ -40,7 +40,7 @@ class Processor(object):
 
     def process(self):
         """
-        Data processing logic.
+        Process records data.
 
         Fetch data records from pipelines and
         store them in a database.
@@ -68,9 +68,7 @@ class Processor(object):
                 logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
 
     def run(self):
-        """
-        Run loop of the processor.
-        """
+        """Run loop of the processor."""
         while True:
             self.process()
             time.sleep(self.sleep_time)

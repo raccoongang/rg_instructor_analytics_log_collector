@@ -58,12 +58,12 @@ class DiscussionPipeline(BasePipeline):
             results of validation (bool)
         """
         return True if (
-            data.get('user_id')
-            and data.get('commentable_id')
-            and data.get('course')
-            and data.get('event_type')
-            and data.get('discussion_id')
-            and data.get('log_time')
+            data.get('user_id') and
+            data.get('commentable_id') and
+            data.get('course') and
+            data.get('event_type') and
+            data.get('discussion_id') and
+            data.get('log_time')
         ) else False
 
     def push_to_database(self, record):

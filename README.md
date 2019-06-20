@@ -56,9 +56,9 @@ python run_processors.py [--aliases] [--sleep_time]
 - `sleep_time` - log directory rescan period (seconds, default: 5 minutes).
 
 
-## Unit tests
+## Tests
 
-##### To run unit tests manually, follow the next steps:
+##### To run tests manually, follow the next steps:
 * Ensure to place the source code in the edx-platform root:
 ```
 ├── cms
