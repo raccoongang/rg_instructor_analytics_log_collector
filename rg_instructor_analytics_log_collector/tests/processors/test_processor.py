@@ -65,17 +65,15 @@ class TestProcessor(TestCase):
     @patch.object(StudentStepPipeline, "format")
     @patch.object(StudentStepPipeline, "push_to_database")
     @patch.object(StudentStepPipeline, "update_last_processed_log")
-    def test_process_push_to_database(
-            self,
-            format_data,
-            records,
-            times_called,
-            mock_update_last_processed_log,
-            mock_push_to_database,
-            mock_format,
-            mock_get_units,
-            mock_get_query
-            ):
+    def test_process_push_to_database(self,
+                                      format_data,
+                                      records,
+                                      times_called,
+                                      mock_update_last_processed_log,
+                                      mock_push_to_database,
+                                      mock_format,
+                                      mock_get_units,
+                                      mock_get_query):
         """Ensure only significant data is pushed to a db."""
         mock_update_last_processed_log.return_value = None
         mock_push_to_database.return_value = None

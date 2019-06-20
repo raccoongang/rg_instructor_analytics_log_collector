@@ -238,12 +238,12 @@ class StudentStepPipeline(BasePipeline):
             results of validation (bool)
         """
         return True if (
-            data.get('user_id') and  # pylint: disable=W504
-            data.get('current_unit') and  # pylint: disable=W504
-            data.get('target_unit') and  # pylint: disable=W504
-            data.get('subsection_id') and  # pylint: disable=W504
-            data.get('log_time') and  # pylint: disable=W504
-            data.get('course') and  # pylint: disable=W504
+            data.get('user_id') and
+            data.get('current_unit') and
+            data.get('target_unit') and
+            data.get('subsection_id') and
+            data.get('log_time') and
+            data.get('course') and
             data.get('event_type')
         ) else False
 
