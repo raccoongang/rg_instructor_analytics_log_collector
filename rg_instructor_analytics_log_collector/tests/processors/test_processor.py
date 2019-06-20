@@ -15,6 +15,9 @@ from rg_instructor_analytics_log_collector.processors.student_step_pipeline impo
 class TestRecords(object):
     """
     Dummy iterator class.
+
+    Also, certain business logic is overridden
+    for testing purposes.
     """
 
     def __iter__(self):
