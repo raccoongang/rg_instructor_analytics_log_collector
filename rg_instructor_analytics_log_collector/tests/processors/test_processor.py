@@ -15,6 +15,9 @@ from rg_instructor_analytics_log_collector.processors.student_step_pipeline impo
 class TestRecords(object):
     """
     Dummy iterator class.
+
+    Also, certain business logic is overridden
+    for testing purposes.
     """
 
     def __init__(self, records):
@@ -87,12 +90,6 @@ class TestProcessor(TestCase):
 
         self.processor.process()
         self.assertEqual(mock_push_to_database.call_count, times_called)
-
-    # TODO implement
-    def test_process_exception(self):
-        """
-        Ensure the flow doesn't stop if any error occurs.
-        """
 
     def tearDown(self):
         logging.disable(logging.NOTSET)

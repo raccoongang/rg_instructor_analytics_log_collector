@@ -54,10 +54,14 @@ class CourseActivityPipeline(BasePipeline):
         """
         Validate a log record.
         """
-        return data['user_id'] \
-            and data['course_id'] \
-            and data['log_time'] \
-            and data['event_type']
+        if (
+            data.get('user_id')
+            and data.get('course_id')
+            and data.get('log_time')
+        ):
+            return True
+        else:
+            return False
 
     def push_to_database(self, record):
         """

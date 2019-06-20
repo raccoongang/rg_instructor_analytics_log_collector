@@ -1,0 +1,34 @@
+[
+  {"data": {"user_id": null,
+            "course_id": null,
+            "log_time": null},
+    "is_valid": false
+  },
+  {"data": {"user_id": "test_user_id",
+            "course_id": "test_course_id",
+            "log_time": "test_log_time"},
+    "is_valid": true
+  },
+  {"data": {"course_id": "test_course_id",
+            "log_time": "test_log_time"},
+    "is_valid": false
+  },
+
+  {"data": {"user_id": "test_user_id",
+            "log_time": "test_log_time"},
+    "is_valid": false
+  },
+  {"data": {"user_id": "test_user_id",
+            "course_id": "test_course_id"},
+    "is_valid": false
+  },
+  {"data": {"user_id": null,
+            "course_id": "test_course_id",
+            "log_time": "test_log_time"},
+    "is_valid": false
+  },
+  {
+    "data": {},
+    "is_valid": false
+  }
+]

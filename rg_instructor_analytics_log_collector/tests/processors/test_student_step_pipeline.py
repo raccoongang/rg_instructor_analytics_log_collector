@@ -10,25 +10,7 @@ from mock import patch
 
 from rg_instructor_analytics_log_collector.processors.student_step_pipeline import StudentStepPipeline
 from rg_instructor_analytics_log_collector.processors.student_step_pipeline import CourseKey
-
-
-class TestRecord(object):
-    """
-    Dummy record class.
-    """
-    log_time = 123
-    user_id = 123
-    event_type = "test_event_type"
-    course_id = 456
-
-    def __init__(self):
-        self.log_message = json.dumps({"event": json.dumps({"test_key": "test_value"}),
-                                      "context": {"user_id": self.user_id,
-                                                  "course_id": self.course_id}})
-        self.message_type = self.event_type
-
-    def log_message(self):
-        return self.log_message
+from rg_instructor_analytics_log_collector.tests.processors.pipeline_test_utils import TestRecord
 
 
 @ddt
