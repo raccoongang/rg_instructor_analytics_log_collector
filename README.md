@@ -57,18 +57,21 @@ python run_processors.py [--aliases] [--sleep_time]
 
 
 ## Unit tests
-Instructions to run tests manually go below.
 
 ##### To run unit tests manually, follow the next steps:
-* Ensure to place the source code in one of the edx-platform directories.
-* Execute the next commands: 
+* Ensure to place the source code in the edx-platform root:
+```
+├── cms
+├── common
+├── lms
+├── openedx
+├── ...
+├── rg_instructor_analytics_log_collector
+```
+
+* Being located in the edx-platform dir, execute the next commands: 
 ```
 # bash
 
-export DJANGO_SETTINGS_MODULE=lms.envs.dev
-export SERVICE_VARIANT=lms
-
-cd rg_instructor_analytics_log_collector
-sh ./test_tool/run_test.sh
-python -m pytest tests/processors
+python -m pytest rg_instructor_analytics_log_collector/rg_instructor_analytics_log_collector/tests/processors
 ```
