@@ -233,14 +233,20 @@ class StudentStepPipeline(BasePipeline):
     def is_valid(self, data):
         """
         Validate a log record.
+
+        Returns:
+            results of validation (bool)
         """
-        return data['user_id'] \
-            and data['current_unit'] \
-            and data['target_unit'] \
-            and data['subsection_id'] \
-            and data['log_time'] \
-            and data['course'] \
-            and data['event_type']
+        if (data.get('user_id')
+            and data.get('current_unit')
+            and data.get('target_unit')
+            and data.get('subsection_id')
+            and data.get('log_time')
+            and data.get('course')
+            and data.get('event_type')
+        ):
+            return True
+        return False
 
     def push_to_database(self, record):
         """
