@@ -2,7 +2,6 @@
 Test `StudentStepPipeline` functionality.
 """
 import logging
-import json
 from unittest import TestCase
 
 from ddt import ddt, data, file_data, unpack
@@ -33,13 +32,13 @@ class TestStudentStepPipeline(TestCase):
         (("test_current_unit", None, None), None),
         (("test_current_unit", "test_target_unit", None), None),
         (("test_current_unit", "test_target_unit", "test_subsection_id"),
-         {'event_type': TestRecord.event_type,
-          'user_id': TestRecord.user_id,
+         {'event_type': TestRecord.EVENT_TYPE,
+          'user_id': TestRecord.USER_ID,
           'course': "course_key",
           'subsection_id': "test_subsection_id",
           'current_unit': "test_current_unit",
           'target_unit': "test_target_unit",
-          'log_time': TestRecord.log_time})
+          'log_time': TestRecord.LOG_TIME})
     )
     @unpack
     @patch.object(CourseKey, "from_string")

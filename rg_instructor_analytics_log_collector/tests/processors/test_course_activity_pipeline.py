@@ -2,7 +2,6 @@
 Test `CourseActivityPipeline` functionality.
 """
 import logging
-import json
 from unittest import TestCase
 
 from ddt import ddt, data, file_data, unpack
