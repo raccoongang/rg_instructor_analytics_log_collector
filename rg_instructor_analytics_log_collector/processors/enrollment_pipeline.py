@@ -41,9 +41,14 @@ class EnrollmentPipeline(BasePipeline):
     def is_valid(self, data):
         """
         Validate a log record.
+
+        Returns:
+            results of validation (bool)
         """
-        return data['log_time'] \
-            and data['course']
+        return super(EnrollmentPipeline, self).is_valid(
+            data.get('log_time')
+            and data.get('course')
+        )
 
     def push_to_database(self, record):
         """

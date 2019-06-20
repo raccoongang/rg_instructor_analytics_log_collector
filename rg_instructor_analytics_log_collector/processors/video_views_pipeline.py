@@ -44,12 +44,17 @@ class VideoViewsPipeline(BasePipeline):
     def is_valid(self, data):
         """
         Validate a log record.
+
+        Returns:
+            results of validation (bool)
         """
-        return data['user_id'] \
-            and data['course_id'] \
-            and data['block_id'] \
-            and data['log_time'] \
-            and data['event_type']
+        return super(VideoViewsPipeline, self).is_valid(
+            data.get('user_id')
+            and data.get('course_id')
+            and data.get('block_id')
+            and data.get('log_time')
+            and data.get('event_type')
+        )
 
     def push_to_database(self, record):
         """
