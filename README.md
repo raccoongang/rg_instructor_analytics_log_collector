@@ -54,3 +54,21 @@ python run_processors.py [--aliases] [--sleep_time]
 ```
 - `aliases` - aliases list to run (aliases of available processors:`enrollment`, `video_views`, `discussion`, `student_step`, `course_activity`)
 - `sleep_time` - log directory rescan period (seconds, default: 5 minutes).
+
+
+## Unit tests
+Instructions to run tests manually go below.
+
+##### To run unit tests manually, follow the next steps:
+* Ensure to place the source code in one of the edx-platform directories.
+* Execute the next commands: 
+```
+# bash
+
+export DJANGO_SETTINGS_MODULE=lms.envs.dev
+export SERVICE_VARIANT=lms
+
+cd rg_instructor_analytics_log_collector
+sh ./test_tool/run_test.sh
+python -m pytest tests/processors
+```

@@ -1,0 +1,80 @@
+[
+  {"data": {"user_id": null,
+            "commentable_id": null,
+            "discussion_id": null,
+            "log_time": null,
+            "course": null,
+            "event_type": null},
+    "is_valid": false
+  },
+  {
+    "data": {"user_id": "test_user_id",
+             "commentable_id": "test_commentable_id",
+             "discussion_id": "test_discussion_id",
+             "log_time": "test_log_time",
+             "course": "test_course",
+             "event_type": "test_event_type"},
+    "is_valid": true
+  },
+  {
+    "data": {"commentable_id": "test_commentable_id",
+             "discussion_id": "test_discussion_id",
+             "log_time": "test_log_time",
+             "course": "test_course",
+             "event_type": "test_event_type"},
+    "is_valid": false
+  },
+  {
+    "data": {"user_id": "test_user_id",
+             "discussion_id": "test_discussion_id",
+             "log_time": "test_log_time",
+             "course": "test_course",
+             "event_type": "test_event_type"},
+    "is_valid": false
+  },
+  {
+    "data": {"user_id": "test_user_id",
+             "commentable_id": "test_commentable_id",
+             "log_time": "test_log_time",
+             "course": "test_course",
+             "event_type": "test_event_type"},
+    "is_valid": false
+  },
+  {
+    "data": {"user_id": "test_user_id",
+             "commentable_id": "test_commentable_id",
+             "discussion_id": "test_discussion_id",
+             "course": "test_course",
+             "event_type": "test_event_type"},
+    "is_valid": false
+  },
+  {
+    "data": {"user_id": "test_user_id",
+             "commentable_id": "test_commentable_id",
+             "discussion_id": "test_discussion_id",
+             "log_time": "test_log_time",
+             "event_type": "test_event_type"},
+    "is_valid": false
+  },
+  {
+    "data": {"user_id": "test_user_id",
+             "commentable_id": "test_commentable_id",
+             "discussion_id": "test_discussion_id",
+             "log_time": "test_log_time",
+             "course": "test_course"},
+    "is_valid": false
+  },
+  {
+    "data": {"user_id": null,
+             "commentable_id": "test_commentable_id",
+             "discussion_id": "test_discussion_id",
+             "log_time": "test_log_time",
+             "course": "test_course",
+             "event_type": "test_event_type"},
+    "is_valid": false
+  },
+  {
+    "data": {},
+    "is_valid": false
+  }
+]
