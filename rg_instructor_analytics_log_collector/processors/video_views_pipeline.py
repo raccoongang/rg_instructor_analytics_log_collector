@@ -15,18 +15,14 @@ log = logging.getLogger(__name__)
 
 
 class VideoViewsPipeline(BasePipeline):
-    """
-    VideoViews stats Processor.
-    """
+    """VideoViews stats Processor."""
 
     alias = 'video_views'
     supported_types = Events.VIDEO_VIEW_EVENTS
     processor_name = LastProcessedLog.VIDEO_VIEWS
 
     def format(self, record):
-        """
-        Format raw log to the internal format.
-        """
+        """Format raw log to the internal format."""
         event_body = json.loads(record.log_message)
         event_body_detail = json.loads(event_body['event'])
         data = {
@@ -49,17 +45,15 @@ class VideoViewsPipeline(BasePipeline):
             results of validation (bool)
         """
         return True if (
-            data.get('user_id') and
-            data.get('course_id') and
-            data.get('block_id') and
-            data.get('log_time') and
+            data.get('user_id') and  # pylint: disable=W504
+            data.get('course_id') and  # pylint: disable=W504
+            data.get('block_id') and  # pylint: disable=W504
+            data.get('log_time') and  # pylint: disable=W504
             data.get('event_type')
         ) else False
 
     def push_to_database(self, record):
-        """
-        Save Video Views info to the database.
-        """
+        """Save Video Views info to the database."""
         course = CourseKey.from_string(record['course_id'])
         user_id = record['user_id']
 

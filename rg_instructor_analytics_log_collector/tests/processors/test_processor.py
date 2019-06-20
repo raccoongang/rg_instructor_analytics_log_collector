@@ -41,22 +41,16 @@ class TestRecords(object):
 
     @staticmethod
     def exists():
-        """
-        Allow for overriding a namesake method.
-        """
+        """Allow for overriding a namesake method."""
         return True
 
 
 @ddt
 class TestProcessor(TestCase):
-    """
-    Test `Processor` logic.
-    """
+    """Test `Processor` logic."""
 
     def setUp(self):
-        """
-        Prepare a test pipeline.
-        """
+        """Prepare a test pipeline."""
         logging.disable(logging.DEBUG)
         # Doesn't matter which one to pick
         Processor.available_pipelines = [StudentStepPipeline()]
@@ -82,9 +76,7 @@ class TestProcessor(TestCase):
             mock_get_units,
             mock_get_query
             ):
-        """
-        Ensure only significant data is pushed to a db.
-        """
+        """Ensure only significant data is pushed to a db."""
         mock_update_last_processed_log.return_value = None
         mock_push_to_database.return_value = None
         mock_get_units.return_value = (None, None, None)
@@ -96,7 +88,5 @@ class TestProcessor(TestCase):
         self.assertEqual(mock_push_to_database.call_count, times_called)
 
     def tearDown(self):
-        """
-        Re-enable logging.
-        """
+        """Re-enable logging."""
         logging.disable(logging.NOTSET)

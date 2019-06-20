@@ -29,7 +29,6 @@ class TestRecord(object):
         self.log_time = log_time
 
         event_body = None
-        # TODO add allowed `record_type`'s + check against it + get rid of magic strings throughout the code (configure)
         if self.record_type == "discussion":
             event_body = {"commentable_id": "test_commentable_id",
                           "id": "test_discussion_id",
