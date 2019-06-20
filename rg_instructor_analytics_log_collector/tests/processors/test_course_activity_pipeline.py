@@ -27,7 +27,6 @@ class TestCourseActivityPipeline(TestCase):
     def test_is_valid(self, entry):
         self.assertEqual(self.pipeline.is_valid(entry.get("data")), entry.get("is_valid"))
 
-    @skip("Skip till figure out a reason")
     @data(
         (None, None, None),
         ("test_course_id", None, None),
