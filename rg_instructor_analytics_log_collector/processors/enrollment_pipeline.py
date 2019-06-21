@@ -30,11 +30,22 @@ class EnrollmentPipeline(BasePipeline):
         """
         event_body = json.loads(record.log_message)
 
-        return {
+        data = {
             'is_enrolled': record.message_type == Events.USER_ENROLLED,
             'course': event_body['event']['course_id'],
             'log_time': record.log_time
         }
+
+        return data if data and self.is_valid(data) else None
+
+    def is_valid(self, data):
+        """
+        Validate a log record.
+
+        Returns:
+            results of validation (bool)
+        """
+        return True if (data.get('log_time') and data.get('course')) else False
 
     def push_to_database(self, record):
         """

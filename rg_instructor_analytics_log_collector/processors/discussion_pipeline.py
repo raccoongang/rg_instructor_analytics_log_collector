@@ -53,8 +53,18 @@ class DiscussionPipeline(BasePipeline):
     def is_valid(self, data):
         """
         Validate a log record.
+
+        Returns:
+            results of validation (bool)
         """
-        return data['user_id'] and data['commentable_id']
+        return True if (
+            data.get('user_id') and
+            data.get('commentable_id') and
+            data.get('course') and
+            data.get('event_type') and
+            data.get('discussion_id') and
+            data.get('log_time')
+        ) else False
 
     def push_to_database(self, record):
         """

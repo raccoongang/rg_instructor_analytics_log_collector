@@ -54,3 +54,24 @@ python run_processors.py [--aliases] [--sleep_time]
 ```
 - `aliases` - aliases list to run (aliases of available processors:`enrollment`, `video_views`, `discussion`, `student_step`, `course_activity`)
 - `sleep_time` - log directory rescan period (seconds, default: 5 minutes).
+
+
+## Tests
+
+##### To run tests manually, follow the next steps:
+* Ensure to place the source code in the edx-platform root:
+```
+├── cms
+├── common
+├── lms
+├── openedx
+├── ...
+├── rg_instructor_analytics_log_collector
+```
+
+* Being located in the edx-platform dir, execute the next commands: 
+```
+# bash
+
+python -m pytest rg_instructor_analytics_log_collector/rg_instructor_analytics_log_collector/tests/processors
+```

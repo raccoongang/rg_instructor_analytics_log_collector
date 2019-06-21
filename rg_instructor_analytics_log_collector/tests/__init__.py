@@ -1,0 +1,1 @@
+"""Test log collection functionality."""

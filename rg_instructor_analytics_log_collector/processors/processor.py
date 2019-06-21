@@ -38,27 +38,32 @@ class Processor(object):
         self.sleep_time = sleep_time
         self.pipelinies = filter(lambda x: x.alias in alias_list, self.available_pipelines)
 
-    def run(self):
+    def process(self):
         """
-        Run loop of the processor.
+        Process records data.
+
+        Fetch data records from pipelines and
+        store them in a database.
         """
-        while True:
-            for pipeline in self.pipelinies:
-                logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
-                records = pipeline.get_query()
+        for pipeline in self.pipelinies:
+            logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
+            records = pipeline.get_query()
 
-                if not records.exists():
-                    logging.info('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
-                    continue
+            if not records.exists():
+                logging.info('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
+                continue
 
-                for record in records:
-                    # Format raw log to the internal format.
-                    data_record = pipeline.format(record)
+            for record in records:
+                # Format raw log to the internal format.
+                data_record = pipeline.format(record)
 
-                    if data_record:
-                        pipeline.push_to_database(data_record)
-
+                if data_record:
+                    pipeline.push_to_database(data_record)
                 pipeline.update_last_processed_log(record)
                 logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
 
+    def run(self):
+        """Run loop of the processor."""
+        while True:
+            self.process()
             time.sleep(self.sleep_time)
