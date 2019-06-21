@@ -58,12 +58,7 @@ class Processor(object):
                 data_record = pipeline.format(record)
 
                 if data_record:
-                    try:
-                        pipeline.push_to_database(data_record)
-                    except Exception as e:
-                        logging.error("An error occurred when pushing the record data to the database "
-                                      "by the {!s} pipeline: {!s}. Record data: {!s}"
-                                      .format(pipeline.alias, e, data_record))
+                    pipeline.push_to_database(data_record)
                 pipeline.update_last_processed_log(record)
                 logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
 
