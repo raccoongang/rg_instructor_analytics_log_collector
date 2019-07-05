@@ -24,12 +24,13 @@ def main():
         type=int,
         default=300
     )
+    parser.add_argument('--delete-logs', action="store_true", help='Delete all unused log records from database')
     arg = parser.parse_args()
     # aliases represent as list of the car lists. We need convert it to the list of the strings.
     alias_list = [str(''.join(a)) for a in arg.aliases]
 
     processor = Processor(alias_list, arg.sleep_time)
-    processor.run()
+    processor.run(delete_logs=arg.delete_logs)
 
 
 if __name__ == "__main__":

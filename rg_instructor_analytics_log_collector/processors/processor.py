@@ -5,8 +5,13 @@ from datetime import datetime
 import logging
 import time
 
-from rg_instructor_analytics_log_collector.models import LogTable
-from rg_instructor_analytics_log_collector.processors.base_pipeline import EnrollmentPipeline
+# from rg_instructor_analytics_log_collector.processors.base_pipeline import EnrollmentPipeline
+from rg_instructor_analytics_log_collector.models import LastProcessedLog, LogTable
+from rg_instructor_analytics_log_collector.processors.course_activity_pipeline import CourseActivityPipeline
+from rg_instructor_analytics_log_collector.processors.discussion_pipeline import DiscussionPipeline
+from rg_instructor_analytics_log_collector.processors.enrollment_pipeline import EnrollmentPipeline
+from rg_instructor_analytics_log_collector.processors.student_step_pipeline import StudentStepPipeline
+from rg_instructor_analytics_log_collector.processors.video_views_pipeline import VideoViewsPipeline
 
 log = logging.getLogger(__name__)
 
@@ -43,25 +48,18 @@ class Processor(object):
 
         return query.order_by('created')
 
-    def run(self):
-        """
-        Run loop of the processor.
-        """
+
+    def delete_logs(self):
+        """Delete all unused log records."""
+        last_date = LastProcessedLog.get_last_date()
+        if last_date:
+            logging.info('Deleting old log records...')
+            LogTable.objects.filter(log_time__lt=last_date).delete()
+
+    def run(self, delete_logs=False):
+        """Run loop of the processor."""
         while True:
-            for pipeline in self.pipelinies:
-                logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
-                records = self._get_query_for_pipeline(pipeline)
-                last_record = records.last()
-
-                if not records:
-                    logging.info('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
-                    continue
-
-                records = filter(None, [pipeline.format(record) for record in records])
-
-                for record in records:
-                    pipeline.push_to_database(record)
-
-                pipeline.update_last_processed_log(last_record)
-                logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
+            self.process()
+            if delete_logs:
+                self.delete_logs()
             time.sleep(self.sleep_time)

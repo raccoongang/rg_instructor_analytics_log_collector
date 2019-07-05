@@ -79,8 +79,22 @@ class EnrollmentPipeline(BasePipeline):
             processor=LastProcessedLog.ENROLLMENT
         ).first()
 
-        return last_processed_log_table and last_processed_log_table.log_table.created
+        return last_processed_log_table and last_processed_log_table.log_table.log_time
 
+
+    def get_query(self):
+        """
+        Return list of the raw logs with type, that suitable for the given pipeline.
+        """
+        query = LogTable.objects.filter(message_type__in=self.supported_types)
+        last_processed_log_date = self.retrieve_last_date()
+
+        if last_processed_log_date:
+            query = query.filter(log_time__gt=last_processed_log_date)
+
+        return query.order_by('log_time')
+
+    @abstractmethod
     def format(self, record):
         """
         Format raw log to the internal format.
