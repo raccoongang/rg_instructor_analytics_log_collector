@@ -33,13 +33,14 @@ def main():
         type=int,
         default=300
     )
+    parser.add_argument('--reload-logs', action="store_true", help='Reload all logs from files into database')
 
     arg = parser.parse_args()
     django.setup()
 
     while True:
         repository = MySQlRepository()
-        run_ziped_file_loader(arg.tracking_log_dir, repository)
+        run_ziped_file_loader(arg.tracking_log_dir, repository, reload_logs=arg.reload_logs)
         time.sleep(arg.sleep_time)
 
 

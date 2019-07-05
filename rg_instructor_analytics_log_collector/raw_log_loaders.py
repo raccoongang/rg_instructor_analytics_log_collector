@@ -9,7 +9,7 @@ from os.path import exists, isdir, join
 log = logging.getLogger(__name__)
 
 
-def run_ziped_file_loader(dir_name, repository):
+def run_ziped_file_loader(dir_name, repository, reload_logs=False):
     """
     Process zipped log files.
 
@@ -26,7 +26,7 @@ def run_ziped_file_loader(dir_name, repository):
                 repository.add_new_log_records(log_file.readlines())
                 logging.info('Finished process next log file: {}'.format(f))
 
-        if not f.endswith('.gz') or f in processed_files:
+        if not f.endswith('.gz') or not reload_logs and f in processed_files:
             continue
 
         with gzip.open(join(dir_name, f), 'rb') as log_file:
