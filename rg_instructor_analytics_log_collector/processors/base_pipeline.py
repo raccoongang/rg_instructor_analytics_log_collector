@@ -42,7 +42,7 @@ class BasePipeline(object):
             processor=self.processor_name
         ).first()
 
-        return last_processed_log_table and last_processed_log_table.log_table.created
+        return last_processed_log_table and last_processed_log_table.log_table.log_time
 
     def get_query(self):
         """
@@ -52,9 +52,9 @@ class BasePipeline(object):
         last_processed_log_date = self.retrieve_last_date()
 
         if last_processed_log_date:
-            query = query.filter(created__gt=last_processed_log_date)
+            query = query.filter(log_time__gt=last_processed_log_date)
 
-        return query.order_by('created')
+        return query.order_by('log_time')
 
     @abstractmethod
     def format(self, record):
