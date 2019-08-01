@@ -29,12 +29,14 @@ class EnrollmentPipeline(BasePipeline):
         Format raw log to the internal format.
         """
         event_body = json.loads(record.log_message)
-
-        return {
+        formatted_record = {
             'is_enrolled': record.message_type == Events.USER_ENROLLED,
+            'user_id': event_body['event']['user_id'],
             'course': event_body['event']['course_id'],
             'log_time': record.log_time
         }
+        self.add_cohort_id(formatted_record)
+        return formatted_record
 
     def push_to_database(self, record):
         """
@@ -45,16 +47,19 @@ class EnrollmentPipeline(BasePipeline):
 
         day_state, created = EnrollmentByDay.objects.get_or_create(
             course=course,
+            cohort_id=record['cohort_id'],
             day=record['log_time'].date(),
         )
 
         enrollment_for_the_last_day = EnrollmentByDay.objects.filter(
             course=course,
+            cohort_id=record['cohort_id'],
             day__lt=day_state.day
         ).order_by('day').last()
 
         enrollment_for_the_following_days = EnrollmentByDay.objects.filter(
             course=course,
+            cohort_id=record['cohort_id'],
             day__gt=day_state.day
         )
 

@@ -4,6 +4,8 @@ Collection of the course activity pipeline.
 import json
 import logging
 
+from django.contrib.auth.models import User
+
 from opaque_keys.edx.keys import CourseKey
 
 from rg_instructor_analytics_log_collector.models import CourseVisitsByDay, LastCourseVisitByUser, LastProcessedLog, \
@@ -47,6 +49,7 @@ class CourseActivityPipeline(BasePipeline):
         else:
             if course_id and user_id:
                 formatted_record = {'course_id': course_id, 'user_id': user_id, 'log_time': record.log_time}
+                self.add_cohort_id(formatted_record)
 
         return formatted_record
 
@@ -56,11 +59,13 @@ class CourseActivityPipeline(BasePipeline):
         """
         course = CourseKey.from_string(record['course_id'])
         user_id = str(record['user_id'])
+        cohort_id = record.get('cohort_id', 0)
         log_time = record['log_time']
 
         last_visit_by_user, created_last_visit = LastCourseVisitByUser.objects.get_or_create(
             course=course,
             user_id=user_id,
+            cohort_id=cohort_id,
             defaults={'log_time': log_time}
         )
 
@@ -70,6 +75,7 @@ class CourseActivityPipeline(BasePipeline):
 
         course_visits_by_day, created_course_visits = CourseVisitsByDay.objects.get_or_create(
             course=course,
+            cohort_id=cohort_id,
             day=log_time.date(),
         )
 
