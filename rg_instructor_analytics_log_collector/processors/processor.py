@@ -58,7 +58,8 @@ class Processor(object):
                 logging.debug('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
                 continue
 
-            logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
+            time_start = datetime.now()
+            logging.info('{} processor started at {}'.format(pipeline.alias, time_start))
 
             chunk_size = self.CHUNK_SIZE_PROCESSOR
             records_counter = 0
@@ -81,8 +82,9 @@ class Processor(object):
                     pipeline.update_last_processed_log(record)
 
             logging.info(
-                '{} processor stopped at {} (processed: {}, saved: {})'.format(
-                pipeline.alias, datetime.now(), records_counter, records_pushed_counter))
+                '{} processor stopped at {} (processed: {}, saved: {}, rate: {} rps)'.format(
+                pipeline.alias, datetime.now(), records_counter, records_pushed_counter,
+                int(records_counter / (datetime.now() - time_start).total_seconds())))
 
     def delete_logs(self):
         """Delete all unused log records."""
