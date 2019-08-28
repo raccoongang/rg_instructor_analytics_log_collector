@@ -38,18 +38,16 @@ class VideoViewsPipeline(BasePipeline):
         return data if self.is_valid(data) else None
 
     def is_valid(self, data):
-        """
-        Validate a log record.
+        """Validate a log record.
 
         Returns:
             results of validation (bool)
         """
-        return True if (
-            data.get('user_id') and
-            data.get('course_id') and
-            data.get('block_id') and
-            data.get('log_time') and
-            data.get('event_type')
+        return True if (data.get('user_id') 
+            and data.get('course_id')
+            and data.get('block_id')
+            and data.get('log_time')
+            and data.get('event_type')
         ) else False
 
     def push_to_database(self, record):

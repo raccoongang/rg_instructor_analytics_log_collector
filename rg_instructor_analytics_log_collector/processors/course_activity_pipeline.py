@@ -51,21 +51,18 @@ class CourseActivityPipeline(BasePipeline):
         return data if data and self.is_valid(data) else None
 
     def is_valid(self, data):
-        """
-        Validate a log record.
+        """Validate a log record.
 
         Returns:
             results of validation (bool)
         """
-        return True if (
-            data.get('user_id') and
-            data.get('course_id') and
-            data.get('log_time')
+        return True if (data.get('user_id')
+                        and data.get('course_id')
+                        and data.get('log_time')
         ) else False
 
     def push_to_database(self, record):
-        """
-        Save Course Activity info to the database.
+        """Save Course Activity info to the database.
         """
         course = CourseKey.from_string(record['course_id'])
         user_id = str(record['user_id'])
