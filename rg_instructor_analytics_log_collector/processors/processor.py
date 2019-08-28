@@ -58,23 +58,20 @@ class Processor(object):
                 logging.debug('{} processor stopped at {} (no records)'.format(pipeline.alias, datetime.now()))
                 continue
 
-            logging.info('{} processor started at {}'.format(pipeline.alias, datetime.now()))
+            time_start = datetime.now()
+            logging.info('{} processor started at {}'.format(pipeline.alias, time_start))
 
             chunk_size = self.CHUNK_SIZE_PROCESSOR
             records_counter = 0
             records_pushed_counter = 0
-
             records_count = records.count()
-            offset = 0
-            while offset < records_count:
-                limit = chunk_size
-                if offset + limit > records_count:
-                    limit = records_count - offset
 
-                logging.debug('{}: total records: {}. processing from {} to {} limit {}'.format(
-                             pipeline.alias,records_count,offset,offset+limit,limit))
+            for offset in range(0, records_count, chunk_size):
 
-                for record in records[offset:offset+limit]:
+                logging.info('{}: total records: {}. processing from {} to {}'.format(
+                             pipeline.alias,records_count,offset,offset+chunk_size))
+
+                for record in records[offset:offset+chunk_size]:
                     # Format raw log to the internal format.
                     data_record = pipeline.format(record)
                     records_counter += 1
@@ -84,34 +81,31 @@ class Processor(object):
                         records_pushed_counter += 1
                     pipeline.update_last_processed_log(record)
 
-                offset += limit
-
             logging.info(
-                '{} processor stopped at {} (processed: {}, saved: {})'.format(
-                pipeline.alias, datetime.now(), records_counter, records_pushed_counter))
+                '{} processor stopped at {} (processed: {}, saved: {}, rate: {} rps)'.format(
+                pipeline.alias, datetime.now(), records_counter, records_pushed_counter,
+                int(records_counter / (datetime.now() - time_start).total_seconds())))
 
     def delete_logs(self):
         """Delete all unused log records."""
         last_date = LastProcessedLog.get_last_date()
 
         if last_date:
+            records = LogTable.objects.filter(log_time__lt=last_date).order_by('log_time')
             chunk_size = self.CHUNK_SIZE_DELETE
 
-            records_ids =  LogTable.objects.filter(log_time__lt=last_date).aggregate(Min('id'), Max('id'))
-            records_min_id = records_ids['id__min']
-            records_max_id = records_ids['id__max']
+            while records.exists():
+                if records.count() > chunk_size:
+                    delete_max_time = records[chunk_size].log_time
+                else:
+                    delete_max_time = last_date
 
-            while records_min_id and records_max_id and records_min_id <= records_max_id:
-                delete_max_id = records_min_id + chunk_size
-                if delete_max_id > records_max_id:
-                    delete_max_id = records_max_id
-
-                logging.debug('deleting old log records. from id {} to id {}'.format(records_min_id, delete_max_id))
+                logging.info('deleting log records older than {}'.format(delete_max_time))
 
                 with transaction.atomic():
-                    LogTable.objects.filter(id__lte=delete_max_id, id__gte=records_min_id).delete()
+                    LogTable.objects.filter(log_time__lt=delete_max_time).delete()
 
-                records_min_id += chunk_size
+                records = LogTable.objects.filter(log_time__lt=last_date).order_by('log_time')
 
     def run(self, delete_logs=False):
         """Run loop of the processor."""
