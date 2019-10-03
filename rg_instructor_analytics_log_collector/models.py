@@ -5,6 +5,7 @@ Models of the RG analytics.
 from django.db import models
 
 from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
+from django.core.validators import validate_comma_separated_integer_list
 
 
 class ProcessedZipLog(models.Model):
@@ -62,15 +63,20 @@ class LastProcessedLog(models.Model):
 
     ENROLLMENT = 'EN'
     VIDEO_VIEWS = 'VI'
+    DISCUSSION_ACTIVITY = 'DA'
+    STUDENT_STEP = 'ST'
+    COURSE_ACTIVITY = 'CA'
 
     PROCESSOR_CHOICES = (
         (ENROLLMENT, 'Enrollment'),
         (VIDEO_VIEWS, 'VideoViews'),
+        (DISCUSSION_ACTIVITY, 'Discussion activity'),
+        (STUDENT_STEP, 'Student step'),
+        (COURSE_ACTIVITY, 'Course activity'),
     )
 
     log_table = models.ForeignKey(LogTable)
     processor = models.CharField(max_length=2, choices=PROCESSOR_CHOICES, unique=True)
-
 
     @classmethod
     def get_last_date(cls):
