@@ -98,4 +98,4 @@ class MySQlRepository(IRepository):
         """
         Mark given file name as processed.
         """
-        ProcessedZipLog.objects.create(file_name=source_name)
+        ProcessedZipLog.objects.get_or_create(file_name=source_name)

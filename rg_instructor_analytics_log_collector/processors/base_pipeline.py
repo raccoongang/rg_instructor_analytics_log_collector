@@ -79,7 +79,7 @@ class EnrollmentPipeline(BasePipeline):
             processor=LastProcessedLog.ENROLLMENT
         ).first()
 
-        return last_processed_log_table and last_processed_log_table.log_table.created
+        return last_processed_log_table and last_processed_log_table.log_table.log_time
 
     def format(self, record):
         """
