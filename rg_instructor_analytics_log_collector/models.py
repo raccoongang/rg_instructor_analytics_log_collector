@@ -70,3 +70,8 @@ class LastProcessedLog(models.Model):
 
     log_table = models.ForeignKey(LogTable)
     processor = models.CharField(max_length=2, choices=PROCESSOR_CHOICES, unique=True)
+
+    @classmethod
+    def get_last_date(cls):
+        """Return the last log date."""
+        return cls.objects.all().aggregate(models.Min('log_table__log_time')).get('log_table__log_time__min')

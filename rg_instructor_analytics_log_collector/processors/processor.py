@@ -5,7 +5,7 @@ from datetime import datetime
 import logging
 import time
 
-from rg_instructor_analytics_log_collector.models import LogTable
+from rg_instructor_analytics_log_collector.models import LastProcessedLog, LogTable
 from rg_instructor_analytics_log_collector.processors.base_pipeline import EnrollmentPipeline
 
 log = logging.getLogger(__name__)
@@ -39,11 +39,18 @@ class Processor(object):
         last_processed_log_date = pipeline.retrieve_last_date()
 
         if last_processed_log_date:
-            query = query.filter(created__gt=last_processed_log_date)
+            query = query.filter(log_time__gt=last_processed_log_date)
 
-        return query.order_by('created')
+        return query.order_by('log_time')
 
-    def run(self):
+    def delete_logs(self):
+        """Delete all unused log records."""
+        last_date = LastProcessedLog.get_last_date()
+        if last_date:
+            logging.info('Deleting old log records...')
+            LogTable.objects.filter(log_time__lt=last_date).delete()
+
+    def run(self, delete_logs=False):
         """
         Run loop of the processor.
         """
@@ -64,4 +71,8 @@ class Processor(object):
 
                 pipeline.update_last_processed_log(last_record)
                 logging.info('{} processor stopped at {}'.format(pipeline.alias, datetime.now()))
+
+            if delete_logs:
+                self.delete_logs()
+
             time.sleep(self.sleep_time)
