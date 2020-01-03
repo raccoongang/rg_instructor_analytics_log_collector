@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# {{ ansible_managed }}
+
+source {{ edxapp_app_dir}}/edxapp_env
+DJANGO_SETTINGS_MODULE=lms.envs.aws_appsembler SERVICE_VARIANT=lms /edx/bin/python.edxapp {{ item.path }}/{{ item.command }}

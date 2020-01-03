@@ -1,0 +1,114 @@
+---
+# Run rg_instructor_analytics_log_collector Python processes
+# Manage as services under systemd (not Supervisor, in order to access tracking log)
+# Must be on edxapp-server to have access to tracking.log
+
+# Example play:
+#
+# - name: Set up Raccoon Gang Instructor Analytics Log Collector programs
+#   hosts: edxapp-server
+#   sudo: True
+#   gather_facts: True
+#   roles:
+#     - rg_instructor_analytics_log_collector
+#
+
+- name: RG Analytics Log Collector - Include vars_files
+  # paths assume this role is installed under configuration/playbooks/roles
+  include_vars:
+    - "../common_vars/defaults/main.yml"
+    - "../common/defaults/main.yml"
+    - "../edxapp/defaults/main.yml"
+  tags:
+    - "install"
+    - "install:configuration"
+    - "rg_instructor_analytics"
+
+- name: RG Analytics Log Collector - Create user
+  user:
+    name: "{{ rg_instructor_analytics_user }}"
+    groups:
+      - edxapp
+      - www-data
+      - adm  # for access to tracking logs
+    createhome: false
+    home: "{{ rg_analytics_log_collector_app_dir }}"
+    shell: /bin/false
+    system: true
+    generate_ssh_key: false
+    state: present
+  tags:
+    - "install"
+    - "install:configuration"
+    - "rg_instructor_analytics"
+
+- name: RG Analytics Log Collector - Create directory for programs
+  file:
+    path: "{{ rg_analytics_log_collector_app_dir }}"
+    state: directory
+    owner: "{{ rg_instructor_analytics_user }}"
+    group: "{{ rg_instructor_analytics_user }}"
+    mode: 0775
+  tags:
+    - "install"
+    - "install:configuration"
+    - "rg_instructor_analytics"
+
+- name: RG Analytics Log Collector - Write shell wrapper for programs
+  template:
+    src: "rg_instructor_analytics_worker.sh.j2"
+    dest: "{{ rg_analytics_log_collector_app_dir }}/{{ item.program_name }}.sh"
+    mode: "0775"
+  become_user: "{{ rg_instructor_analytics_user }}"
+  with_items: "{{ rg_analytics_log_collector_workers }}"
+  tags:
+    - "install"
+    - "install:configuration"
+    - "rg_instructor_analytics"
+
+- name: RG Analytics Log Collector - Add systemd configurations on 16.04
+  template:
+    src: "rg_instructor_analytics.service.j2"
+    dest: "/etc/systemd/system/rg_instructor_analytics.{{ item.program_name }}.service"
+  with_items: "{{ rg_analytics_log_collector_workers }}"
+  when: ansible_distribution_release == 'xenial'
+  tags:
+    - "install"
+    - "install:configuration"
+    - "rg_instructor_analytics"
+
+- name: RG Analytics Log Collector - Enable systemd unit on 16.04
+  systemd:
+    name: "rg_instructor_analytics.{{ item.program_name }}"
+    enabled: true
+    daemon_reload: true
+  with_items: "{{ rg_analytics_log_collector_workers }}"
+  when: ansible_distribution_release == 'xenial'
+  tags:
+    - "install"
+    - "install:configuration"
+    - "rg_instructor_analytics"
+
+- name: RG Analytics Log Collector - Stop services
+  service:
+    name: "rg_instructor_analytics.{{ item.program_name }}"
+    state: stopped
+  with_items: "{{ rg_analytics_log_collector_workers }}"
+  tags:
+    - "install"
+    - "install:configuration"
+    - "rg_instructor_analytics"
+    - "manage"
+    - "manage:stop"
+
+- name: RG Analytics Log Collector - Start services
+  service:
+    name: "rg_instructor_analytics.{{ item.program_name }}"
+    state: started
+  with_items: "{{ rg_analytics_log_collector_workers }}"
+  tags:
+    - "install"
+    - "install:configuration"
+    - "rg_instructor_analytics"
+    - "manage"
+    - "manage:stop"
