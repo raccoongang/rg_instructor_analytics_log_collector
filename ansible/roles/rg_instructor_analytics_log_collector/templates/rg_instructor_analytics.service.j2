@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=RG Instructor Analytics {{ item.program_name }}
+After=network.target
+Documentation=https://github.com/raccoongang/rg_instructor_analytics_log_collector/tree/washington_university
+
+[Service]
+User={{ rg_instructor_analytics_user }}
+WorkingDirectory={{ rg_analytics_log_collector_app_dir }}
+ExecStart={{ rg_analytics_log_collector_app_dir }}/{{ item.program_name }}.sh
+Restart=always
+
+# Setting Restart interval to be 3 seconds
+# because systemd stops restarting if the service fails to restart
+# more than 5 times within a period of 10 seconds.
+# https://www.freedesktop.org/software/systemd/man/systemd.unit.html#StartLimitIntervalSec=
+RestartSec=3

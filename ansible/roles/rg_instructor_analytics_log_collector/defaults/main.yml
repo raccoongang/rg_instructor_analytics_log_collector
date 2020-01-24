@@ -1,0 +1,12 @@
+---
+
+venv_path: "{{ edxapp_venv_dir }}/src/rg-instructor-analytics-log-collector"
+rg_instructor_analytics_user: "rg_instructor_analytics"
+rg_analytics_log_collector_app_dir: "{{ edxapp_app_dir }}/rg_analytics_log_collector"
+rg_analytics_log_collector_workers:
+  - program_name: "log_watcher"
+    command: "run_log_watcher.py"
+    path: "{{ venv_path }}"
+  - program_name: "processor"
+    command: "run_processors.py -a enrollment"
+    path: "{{ venv_path }}"
